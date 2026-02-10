@@ -3,7 +3,7 @@ import { api } from "@/lib/api";
 
 export const refreshAccessToken = async (refreshToken: string) => {
   try {
-    const response = await api.post("/auth/refresh-token", {
+    const response = await api.post("/auth/refresh-access-token", {
       refreshToken,
     });
     return response.data;

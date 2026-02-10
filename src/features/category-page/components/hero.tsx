@@ -2,18 +2,28 @@
 
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { useContent } from "@/features/category-page/hooks/use-content";
-import HeroSkeleton from "@/features/category-page/components/hero.skeleton";
-import { MoveRightIcon } from "lucide-react";
-import { useDashboardStats } from "@/features/category-page/hooks/use-stats";
 import Link from "next/link";
+import { MoveRightIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { useContent } from "@/features/category-page/hooks/use-content";
+import HeroSkeleton from "@/features/category-page/components/hero.skeleton";
+import { memo, useMemo } from "react";
+import { CategoryContent } from "@/features/category-page/api/category.api";
 
-const categoryStyles: Record<
-  string,
-  { bg: string; text: string; border: string }
-> = {
+// Types
+interface HeroProps {
+  type?: string;
+}
+
+interface CategoryStyle {
+  bg: string;
+  text: string;
+  border: string;
+}
+
+// Constants
+const CATEGORY_STYLES: Record<string, CategoryStyle> = {
   home: { bg: "bg-blue-50", text: "text-blue-600", border: "border-blue-200" },
   sketch: {
     bg: "bg-orange-50",
@@ -47,112 +57,156 @@ const categoryStyles: Record<
   },
 };
 
-function getCategoryStyle(type?: string) {
-  const normalizedType = type?.toLowerCase() || "default";
-  return (
-    categoryStyles[normalizedType] || {
-      bg: "bg-gray-50",
-      text: "text-gray-600",
-      border: "border-gray-200",
-    }
-  );
-}
+const DEFAULT_STYLE: CategoryStyle = {
+  bg: "bg-gray-50",
+  text: "text-blue-600",
+  border: "border-blue-200",
+};
 
-export function Hero({ type }: { type?: string }) {
+const DEFAULT_CONTENT = {
+  title: "Turn Any Artwork Into Coloring Magic",
+  subtitle:
+    "Turn any photo or drawing into a clean coloring page with powerful AI technology, designed to capture every detail you love and transform it into creative outlines, ready for coloring, sharing, or printing instantly.",
+  image: "/images/heroImage.png",
+};
+
+// Utils
+const getCategoryStyle = (type?: string): CategoryStyle => {
+  if (!type) return DEFAULT_STYLE;
+  const normalizedType = type.toLowerCase();
+  return CATEGORY_STYLES[normalizedType] || DEFAULT_STYLE;
+};
+
+const shouldShowBadge = (type?: string): boolean => {
+  return type?.toLowerCase() !== "home";
+};
+
+// Subcomponents
+const HeroContent = memo(
+  ({
+    type,
+    heroContent,
+    categoryStyle,
+  }: {
+    type?: string;
+    heroContent: CategoryContent | undefined;
+    categoryStyle: CategoryStyle;
+  }) => (
+    <div className="space-y-6">
+      {shouldShowBadge(type) && (
+        <Badge
+          variant="outline"
+          className={cn(
+            "text-base px-4 py-1.5 font-semibold uppercase tracking-wider rounded-full border-2 transition-all duration-300",
+            categoryStyle.bg,
+            categoryStyle.text,
+            categoryStyle.border,
+          )}
+        >
+          {type || heroContent?.type || "Explore"}
+        </Badge>
+      )}
+
+      <h1 className="text-5xl md:text-6xl font-black tracking-tight text-secondary-foreground leading-tight">
+        {heroContent?.title || DEFAULT_CONTENT.title}
+      </h1>
+
+      <p className="text-base md:text-lg text-gray-600 max-w-2xl leading-relaxed">
+        {heroContent?.subtitle || DEFAULT_CONTENT.subtitle}
+      </p>
+
+      <Link
+        href={
+          type
+            ? `/create-book?type=${encodeURIComponent(type)}`
+            : "/create-book"
+        }
+        prefetch={true}
+      >
+        <Button
+          size="lg"
+          className="bg-primary text-white px-8 h-12 text-base font-bold shadow-lg hover:shadow-primary/20 transition-all active:scale-[0.98]"
+        >
+          Start creating NOW!
+          <MoveRightIcon className="ml-2" aria-hidden="true" />
+        </Button>
+      </Link>
+    </div>
+  ),
+);
+
+HeroContent.displayName = "HeroContent";
+
+const HeroImage = memo(
+  ({ heroContent }: { heroContent: CategoryContent | undefined }) => (
+    <div className="relative max-h-full">
+      <div className="relative rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.15)] bg-white aspect-[12/11]">
+        <Image
+          src={
+            typeof heroContent?.image === "string"
+              ? heroContent.image
+              : DEFAULT_CONTENT.image
+          }
+          alt={heroContent?.title || "Sketch transformation"}
+          fill
+          sizes="(max-width: 768px) 100vw, 50vw"
+          className="object-cover"
+          priority
+        />
+      </div>
+      <div
+        className="absolute -top-4 -right-4 w-24 h-24 bg-[radial-gradient(#FF7A3D_1px,transparent_1px)] [background-size:16px_16px] opacity-20 -z-10"
+        aria-hidden="true"
+      />
+    </div>
+  ),
+);
+
+HeroImage.displayName = "HeroImage";
+
+const ErrorState = memo(() => (
+  <div
+    className="h-[600px] flex items-center justify-center text-red-500"
+    role="alert"
+  >
+    Error loading content. Please try again later!
+  </div>
+));
+
+ErrorState.displayName = "ErrorState";
+
+// Main Component
+export const Hero = memo(({ type }: HeroProps) => {
   const { data, isLoading: isContentLoading, error } = useContent({ type });
-  const { data: statsData, isLoading: isStatsLoading } = useDashboardStats();
-  console.log(statsData);
-  const heroContent = data?.data?.[0];
-  const isLoading = isContentLoading || isStatsLoading;
+
+  const heroContent = useMemo(() => data?.data?.[0], [data]);
+  const isLoading = isContentLoading;
+
+  const categoryStyle = useMemo(
+    () => getCategoryStyle(type || heroContent?.type),
+    [type, heroContent?.type],
+  );
 
   if (isLoading) {
     return <HeroSkeleton />;
   }
 
   if (error) {
-    return (
-      <div className="h-[600px] flex items-center justify-center text-red-500">
-        Error loading content, Please try again later!!
-      </div>
-    );
+    return <ErrorState />;
   }
-  console.log(heroContent);
 
   return (
-    <section className="relative px-6 py-10 md:py-12 lg:px-12 bg-accent">
+    <section className="relative md:px-6 py-10 md:py-12 lg:px-12 bg-accent">
       <div className="container mx-auto grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-        <div className="space-y-6">
-          <Badge
-            variant="outline"
-            className={cn(
-              "text-sm px-4 py-1.5 font-bold uppercase tracking-wider rounded-full border-2 transition-all duration-300",
-              getCategoryStyle(type || heroContent?.type).bg,
-              getCategoryStyle(type || heroContent?.type).text,
-              getCategoryStyle(type || heroContent?.type).border,
-            )}
-          >
-            {type || heroContent?.type || "Explore"}
-          </Badge>
-          <h1 className="text-5xl md:text-6xl font-black tracking-tight text-secondary-foreground leading-tight">
-            {heroContent?.title || "Turn Any Artwork Into Coloring Magic"}
-          </h1>
-          <p className="text-base md:text-lg text-gray-600 max-w-2xl leading-relaxed">
-            {heroContent?.subtitle ||
-              "Turn any photo or drawing into a clean coloring page with powerful AI technology, designed to capture every detail you love and transform it into creative outlines, ready for coloring, sharing, or printing instantly."}
-          </p>
-          <Link
-            href={
-              type
-                ? `/create-book?type=${encodeURIComponent(type)}`
-                : "/create-book"
-            }
-          >
-            <Button
-              size="lg"
-              className="bg-primary text-white  px-8 h-12 text-base font-bold shadow-lg hover:shadow-primary/20 transition-all active:scale-[0.98]"
-            >
-              Start creating NOW!
-              <MoveRightIcon />
-            </Button>
-          </Link>
-
-          {/* <div className="flex flex-wrap gap-8 pt-2">
-            <div className="flex gap-3 items-center">
-              <span className="text-4xl font-bold text-primary-foreground">
-                {statsData?.totalUsersCount}+
-              </span>
-              <span className="text-xs font-semibold text-gray-500 leading-tight">
-                Total
-                <br />
-                Users
-              </span>
-            </div>
-            <div className="flex gap-3 items-center">
-              <span className="text-4xl font-bold text-primary-foreground">
-                {statsData?.paidOrdersCount}+
-              </span>
-              <span className="text-xs font-semibold text-gray-500 leading-tight">
-                Total
-                <br />
-                Book Created
-              </span>
-            </div>
-          </div> */}
-        </div>
-
-        <div className="relative max-h-full">
-          <div className="relative rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.15)] bg-white aspect-12/11">
-            <Image
-              src={heroContent?.image || "/images/heroImage.png"}
-              alt={heroContent?.title || "Sketch transformation"}
-              fill
-              className="object-cover"
-              priority
-            />
-          </div>
-          <div className="absolute -top-4 -right-4 w-24 h-24 bg-[radial-gradient(#FF7A3D_1px,transparent_1px)] bg-size-[16px_16px] opacity-20 -z-10" />
-        </div>
+        <HeroContent
+          type={type}
+          heroContent={heroContent}
+          categoryStyle={categoryStyle}
+        />
+        <HeroImage heroContent={heroContent} />
       </div>
     </section>
   );
-}
+});
+
+Hero.displayName = "Hero";

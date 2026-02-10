@@ -135,7 +135,7 @@ const handler = NextAuth({
       try {
         const refreshedTokens = await refreshAccessToken(token.refreshToken);
 
-        if (!refreshedTokens.success) {
+        if (!refreshedTokens.status) {
           throw refreshedTokens;
         }
 

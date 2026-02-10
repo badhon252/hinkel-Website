@@ -27,7 +27,7 @@ export default function CategoryPage({
 
   return (
     <div className="min-h-screen">
-      <Hero type={slug} />
+      <Hero type={slug.toLocaleLowerCase()} />
 
       {cmsContent?.richText && (
         <section className="py-12 md:py-20 bg-secondary">

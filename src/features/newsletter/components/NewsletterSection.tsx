@@ -34,7 +34,7 @@ export const NewsletterSection = memo(() => {
 
   return (
     <div className="md:col-span-4 lg:col-span-3">
-      <h3 className="text-gray-900 font-semibold mb-6">Newsletter Signup</h3>
+      <h3 className="text-gray-900 font-semibold mb-6">Join Our Newsletter</h3>
       <div className=" space-y-2">
         <label htmlFor="footer-email" className="sr-only">
           Email address

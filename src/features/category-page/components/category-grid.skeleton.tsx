@@ -11,9 +11,9 @@ export default function CategoryGridSkeleton() {
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
-              className="relative rounded-[2rem] overflow-hidden bg-white shadow-lg flex-shrink-0 w-[85%] sm:w-[45%] lg:w-[calc(25%-1.5rem)] border-4 border-transparent"
+              className="relative rounded-4xl overflow-hidden bg-white shadow-lg shrink-0 w-[85%] sm:w-[45%] lg:w-[calc(25%-1.5rem)] border-4 border-transparent"
             >
-              <div className="aspect-[4/5] relative bg-gray-50">
+              <div className="aspect-4/5 relative bg-gray-50">
                 <Skeleton className="w-full h-full bg-gray-200/50" />
               </div>
               <div className="bg-primary py-5 flex justify-center">
