@@ -273,7 +273,7 @@ export function CategoryGrid() {
 
   return (
     <section
-      className="py-20 px-6 bg-gradient-to-b from-gray-50 via-white to-gray-50/50 relative overflow-hidden"
+      className="py-20 px-6 bg-secondary relative overflow-hidden"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >

@@ -8,11 +8,14 @@ import {
   Search,
   Loader2,
   MailQuestion,
+  Download,
 } from "lucide-react";
 import {
   useSubscribers,
   useDeleteSubscriber,
 } from "@/features/newsletter/hooks/use-subscribers";
+import { getAllSubscribers } from "@/features/newsletter/api/newsletter.api";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -39,8 +42,62 @@ export function SubscribersTable() {
     error,
   } = useSubscribers({ q: searchTerm });
   const { mutate: deleteSub, isPending: isDeleting } = useDeleteSubscriber();
+  const [isExporting, setIsExporting] = useState(false);
 
   const subscribers = subscribersData?.data || [];
+
+  const handleExport = async () => {
+    try {
+      setIsExporting(true);
+      // Fetch all subscribers without filters to ensure complete list export
+      const response = await getAllSubscribers({ limit: 0 }); // Assuming limit: 0 or a very large number returns all
+      const allSubscribers = response?.data || [];
+
+      if (!allSubscribers || allSubscribers.length === 0) {
+        toast.error("No subscribers to export");
+        return;
+      }
+
+      const headers = ["ID", "Email Address", "Subscription Date"];
+      const csvData = allSubscribers.map((sub: Subscriber) => [
+        sub._id,
+        sub.email,
+        sub.createdAt
+          ? new Intl.DateTimeFormat("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            }).format(new Date(sub.createdAt))
+          : "N/A",
+      ]);
+
+      const csvContent = [
+        headers.join(","),
+        ...csvData.map((row: string[]) =>
+          row.map((cell: string) => `"${cell}"`).join(","),
+        ),
+      ].join("\n");
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute(
+        "download",
+        `subscribers_full_${new Date().toISOString().split("T")[0]}.csv`,
+      );
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success("Subscriber list exported successfully");
+    } catch (error) {
+      console.error("Export failed:", error);
+      toast.error("Failed to export subscribers");
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   if (error) {
     return (
@@ -66,9 +123,25 @@ export function SubscribersTable() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="text-sm font-medium text-slate-500">
-          Total Subscribers:{" "}
-          <span className="text-slate-900">{subscribers.length}</span>
+        <div className="flex items-center gap-4">
+          <Button
+            onClick={handleExport}
+            disabled={isExporting || subscribers.length === 0}
+            className="bg-[#ff7a00] hover:bg-[#ff7a00]/90 text-white gap-2 h-10 px-4 rounded-xl shadow-sm shadow-orange-200 transition-all active:scale-95 disabled:opacity-70"
+          >
+            {isExporting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Download className="h-4 w-4" />
+            )}
+            <span className="hidden sm:inline">
+              {isExporting ? "Exporting..." : "Export CSV"}
+            </span>
+          </Button>
+          <div className="text-sm font-medium text-slate-500 whitespace-nowrap">
+            Total Subscribers:{" "}
+            <span className="text-slate-900">{subscribers.length}</span>
+          </div>
         </div>
       </div>
 

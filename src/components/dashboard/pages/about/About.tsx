@@ -5,7 +5,10 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useAbout, useUpdateAbout } from "@/features/dashboard/hooks/use-about";
+import {
+  useAbout,
+  useUpdateAbout,
+} from "@/features/website-content/hooks/use-about-content";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Editor from "@/components/dashboard/common/Editor";
@@ -82,7 +85,7 @@ const About = () => {
         <Button
           onClick={form.handleSubmit(onSubmit)}
           disabled={isUpdating}
-          className="bg-primary hover:bg-primary/90 min-w-[140px]"
+          className="bg-primary hover:bg-primary/90 text-white min-w-[140px]"
         >
           {isUpdating ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

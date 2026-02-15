@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useEffect } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
@@ -82,7 +83,7 @@ const MenuBar = ({ editor }: { editor: TiptapEditor | null }) => {
       >
         <UnderlineIcon className="h-4 w-4" />
       </Button>
-      <div className="w-[1px] h-6 bg-slate-300 mx-1 self-center" />
+      <div className="w-px h-6 bg-slate-300 mx-1 self-center" />
       <Button
         type="button"
         variant="ghost"
@@ -119,7 +120,7 @@ const MenuBar = ({ editor }: { editor: TiptapEditor | null }) => {
       >
         <Quote className="h-4 w-4" />
       </Button>
-      <div className="w-[1px] h-6 bg-slate-300 mx-1 self-center" />
+      <div className="w-px h-6 bg-slate-300 mx-1 self-center" />
       <Button
         type="button"
         variant="ghost"
@@ -187,17 +188,14 @@ const Editor = ({ value, onChange }: Omit<EditorProps, "placeholder">) => {
     immediatelyRender: false,
   });
 
-  // Keep editor content in sync with external value if it changes
-  // and it's different from the editor's current content
-  if (editor && value !== editor.getHTML()) {
-    // Only set content if it's the first time or if content truly diverged
-    // Careful with double triggering onUpdate
-    // editor.commands.setContent(value, false);
-  }
-
   // Effect to handle initial value or external reset
   // using useEditor's content is usually enough if handled correctly on initialization
   // but for form resets, we might need a useEffect
+  useEffect(() => {
+    if (editor && value !== editor.getHTML()) {
+      editor.commands.setContent(value);
+    }
+  }, [value, editor]);
 
   return (
     <div className="border border-slate-200 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 transition-all bg-white">

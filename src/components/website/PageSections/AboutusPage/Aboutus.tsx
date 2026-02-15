@@ -1,24 +1,24 @@
 "use client";
 
-import React from "react";
+// import React from "react";
 import { usePublicAbout } from "@/features/website-content/hooks/use-about-content";
 import { Loader2 } from "lucide-react";
 
 const Aboutus = () => {
   const { data: aboutData, isLoading, isError } = usePublicAbout();
 
-  const audiences = [
-    { label: "Children", desc: "for creativity, learning, and fun" },
-    { label: "Pet lovers", desc: "to celebrate beloved pets" },
-    {
-      label: "Seniors & memory care",
-      desc: "for relaxation and cognitive engagement",
-    },
-    {
-      label: "Adults & novelty users",
-      desc: "for stress relief, hobbies, and unique gifts",
-    },
-  ];
+  // const audiences = [
+  //   { label: "Children", desc: "for creativity, learning, and fun" },
+  //   { label: "Pet lovers", desc: "to celebrate beloved pets" },
+  //   {
+  //     label: "Seniors & memory care",
+  //     desc: "for relaxation and cognitive engagement",
+  //   },
+  //   {
+  //     label: "Adults & novelty users",
+  //     desc: "for stress relief, hobbies, and unique gifts",
+  //   },
+  // ];
 
   if (isLoading) {
     return (
@@ -46,11 +46,11 @@ const Aboutus = () => {
   return (
     <section className="min-h-screen bg-secondary flex justify-center px-6 py-16">
       <div className="max-w-4xl w-full text-gray-700">
-        <div className="flex justify-center mb-8 ">
+        {/* <div className="flex justify-center mb-8 ">
           <span className="px-4 py-1 text-sm rounded-full bg-[#FFE5D2] text-gray-600">
             About Us
           </span>
-        </div>
+        </div> */}
 
         <h1 className="text-center text-3xl md:text-4xl font-semibold text-gray-600 mb-8">
           {title}
@@ -62,7 +62,7 @@ const Aboutus = () => {
         />
 
         {/* Existing audience list as a fallback or additional info if content doesn't cover it */}
-        {!content.includes("Children") && (
+        {/* {!content.includes("Children") && (
           <>
             <p className="text-lg leading-relaxed mb-6 font-semibold">
               Who we serve:
@@ -75,7 +75,7 @@ const Aboutus = () => {
               ))}
             </ul>
           </>
-        )}
+        )} */}
       </div>
     </section>
   );
