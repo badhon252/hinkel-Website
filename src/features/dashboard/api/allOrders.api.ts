@@ -1,8 +1,10 @@
 import { api } from "@/lib/api";
 
-export async function getAllOrders(page: number = 1, limit: number = 10) {
+export async function getAllOrders(
+  params: Record<string, string | number | undefined>,
+) {
   try {
-    const res = await api.get(`order/admin/all-orders?page=${page}&limit=${limit}`);
+    const res = await api.get(`order/admin/all-orders`, { params });
     return res.data;
   } catch (error) {
     console.error("Error fetching all orders:", error);
@@ -10,3 +12,17 @@ export async function getAllOrders(page: number = 1, limit: number = 10) {
   }
 }
 
+export async function exportOrders(
+  params: Record<string, string | number | undefined>,
+) {
+  try {
+    const res = await api.get(`order/admin/export-orders`, {
+      params,
+      responseType: "blob",
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error exporting orders:", error);
+    throw error;
+  }
+}
