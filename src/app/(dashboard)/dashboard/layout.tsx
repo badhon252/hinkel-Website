@@ -1,23 +1,15 @@
 import type { Metadata } from "next";
-import Sidebar from "@/components/dashboard/common/Sidebar";
+import DashboardShell from "@/components/dashboard/common/DashboardShell";
 
 export const metadata: Metadata = {
-    title: "Dashboard Template.",
-    description:
-        "A modern dashboard template built with Next.js and Tailwind CSS.",
+  title: "Dashboard | Hinkle Creek",
+  description: "Manage your books, categories, and site content.",
 };
 
 export default function RootLayout({
-    children,
+  children,
 }: Readonly<{
-    children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
-    return (
-        <div className="flex">
-            <Sidebar />
-            <main className="flex-1 ml-64 p-6 overflow-auto min-h-screen">
-                {children}
-            </main>
-        </div>
-    );
+  return <DashboardShell>{children}</DashboardShell>;
 }
