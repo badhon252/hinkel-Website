@@ -50,7 +50,7 @@ export default function BookCreation() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-background md:pb-10">
       <main className="flex-1">
         {step === "landing" && <LandingPage />}
         {step === "cover" && <CoverPageTestPage />}

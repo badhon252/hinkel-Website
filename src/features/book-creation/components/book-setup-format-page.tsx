@@ -11,6 +11,7 @@ import { BookStore, OutputFormat, DeliveryType } from "../types";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { AuthModal } from "@/components/shared/AuthModal";
 
 export default function BookSetupFormatPage() {
   const setStep = useBookStore((state: BookStore) => state.setStep);
@@ -36,6 +37,7 @@ export default function BookSetupFormatPage() {
     outputFormat || "pdf",
   );
   const [errors, setErrors] = useState<{ title?: string }>({});
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const steps = ["Cover Art", "Details", "Payment", "Content", "Review"];
 
@@ -133,8 +135,7 @@ export default function BookSetupFormatPage() {
     }
 
     if (!session?.user?.id) {
-      toast.error("Please login to continue");
-      router.push("/login?callbackUrl=/create-book");
+      setIsAuthModalOpen(true);
       return;
     }
 
@@ -317,6 +318,12 @@ export default function BookSetupFormatPage() {
           </button>
         </div>
       </div>
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        redirectUrl="/create-book"
+      />
     </div>
   );
 }

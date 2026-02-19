@@ -80,10 +80,7 @@ export async function proxy(request: NextRequest) {
   console.log(`[Proxy] User State: ${isGuest ? "Guest" : userRole}`);
 
   // 2. Rule: Guests cannot see the Dashboard or Create Book
-  if (
-    isGuest &&
-    (pathname.startsWith("/dashboard") || pathname.startsWith("/create-book"))
-  ) {
+  if (isGuest && pathname.startsWith("/dashboard")) {
     console.log(
       `Action: Guest tried to enter ${pathname} -> Redirect to Login`,
     );

@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import Link from "next/link";
 import { MoveRightIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -10,10 +9,12 @@ import { useContent } from "@/features/category-page/hooks/use-content";
 import HeroSkeleton from "@/features/category-page/components/hero.skeleton";
 import { memo, useMemo } from "react";
 import { CategoryContent } from "@/features/category-page/api/category.api";
+import { useRouter } from "next/navigation";
 
 // Types
 interface HeroProps {
   type?: string;
+  heroContent?: CategoryContent;
 }
 
 interface CategoryStyle {
@@ -91,48 +92,54 @@ const HeroContent = memo(
     type?: string;
     heroContent: CategoryContent | undefined;
     categoryStyle: CategoryStyle;
-  }) => (
-    <div className="space-y-6">
-      {shouldShowBadge(type) && (
-        <Badge
-          variant="outline"
-          className={cn(
-            "text-base px-4 py-1.5 font-semibold uppercase tracking-wider rounded-full border-2 transition-all duration-300",
-            categoryStyle.bg,
-            categoryStyle.text,
-            categoryStyle.border,
-          )}
-        >
-          {type || heroContent?.type || "Explore"}
-        </Badge>
-      )}
+  }) => {
+    const router = useRouter();
 
-      <h1 className="text-5xl md:text-6xl font-black tracking-tight text-secondary-foreground leading-tight">
-        {heroContent?.title || DEFAULT_CONTENT.title}
-      </h1>
+    const redirectPath = useMemo(() => {
+      return type
+        ? `/create-book?type=${encodeURIComponent(type)}`
+        : "/create-book";
+    }, [type]);
 
-      <p className="text-base md:text-lg text-gray-600 max-w-2xl leading-relaxed">
-        {heroContent?.subtitle || DEFAULT_CONTENT.subtitle}
-      </p>
+    const handleStartCreating = () => {
+      router.push(redirectPath);
+    };
 
-      <Link
-        href={
-          type
-            ? `/create-book?type=${encodeURIComponent(type)}`
-            : "/create-book"
-        }
-        prefetch={true}
-      >
+    return (
+      <div className="space-y-6">
+        {shouldShowBadge(type) && (
+          <Badge
+            variant="outline"
+            className={cn(
+              "text-base px-4 py-1.5 font-semibold uppercase tracking-wider rounded-full border-2 transition-all duration-300",
+              categoryStyle.bg,
+              categoryStyle.text,
+              categoryStyle.border,
+            )}
+          >
+            {type || heroContent?.type || "Explore"}
+          </Badge>
+        )}
+
+        <h1 className="text-5xl md:text-6xl font-black tracking-tight text-secondary-foreground leading-tight">
+          {heroContent?.title || DEFAULT_CONTENT.title}
+        </h1>
+
+        <p className="text-base md:text-lg text-gray-600 max-w-2xl leading-relaxed">
+          {heroContent?.subtitle || DEFAULT_CONTENT.subtitle}
+        </p>
+
         <Button
           size="lg"
+          onClick={handleStartCreating}
           className="bg-primary text-white px-8 h-12 text-base font-bold shadow-lg hover:shadow-primary/20 transition-all active:scale-[0.98]"
         >
           Start creating NOW!
           <MoveRightIcon className="ml-2" aria-hidden="true" />
         </Button>
-      </Link>
-    </div>
-  ),
+      </div>
+    );
+  },
 );
 
 HeroContent.displayName = "HeroContent";
@@ -140,7 +147,7 @@ HeroContent.displayName = "HeroContent";
 const HeroImage = memo(
   ({ heroContent }: { heroContent: CategoryContent | undefined }) => (
     <div className="relative max-h-full">
-      <div className="relative rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.15)] bg-white aspect-[12/11]">
+      <div className="relative rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.15)] bg-white aspect-12/11">
         <Image
           src={
             typeof heroContent?.image === "string"
@@ -155,7 +162,7 @@ const HeroImage = memo(
         />
       </div>
       <div
-        className="absolute -top-4 -right-4 w-24 h-24 bg-[radial-gradient(#FF7A3D_1px,transparent_1px)] [background-size:16px_16px] opacity-20 -z-10"
+        className="absolute -top-4 -right-4 w-24 h-24 bg-[radial-gradient(#FF7A3D_1px,transparent_1px)] bg-size-[16px_16px] opacity-20 -z-10"
         aria-hidden="true"
       />
     </div>
@@ -176,37 +183,46 @@ const ErrorState = memo(() => (
 ErrorState.displayName = "ErrorState";
 
 // Main Component
-export const Hero = memo(({ type }: HeroProps) => {
-  const { data, isLoading: isContentLoading, error } = useContent({ type });
+export const Hero = memo(
+  ({ type, heroContent: initialHeroContent }: HeroProps) => {
+    const {
+      data,
+      isLoading: isContentLoading,
+      error,
+    } = useContent(initialHeroContent ? undefined : { type });
 
-  const heroContent = useMemo(() => data?.data?.[0], [data]);
-  const isLoading = isContentLoading;
+    const heroContent = useMemo(
+      () => initialHeroContent || data?.data?.[0],
+      [initialHeroContent, data],
+    );
+    const isLoading = !initialHeroContent && isContentLoading;
 
-  const categoryStyle = useMemo(
-    () => getCategoryStyle(type || heroContent?.type),
-    [type, heroContent?.type],
-  );
+    const categoryStyle = useMemo(
+      () => getCategoryStyle(type || heroContent?.type),
+      [type, heroContent?.type],
+    );
 
-  if (isLoading) {
-    return <HeroSkeleton />;
-  }
+    if (isLoading) {
+      return <HeroSkeleton />;
+    }
 
-  if (error) {
-    return <ErrorState />;
-  }
+    if (error) {
+      return <ErrorState />;
+    }
 
-  return (
-    <section className="relative md:px-6 py-10 md:py-12 lg:px-12 bg-accent">
-      <div className="container mx-auto grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-        <HeroContent
-          type={type}
-          heroContent={heroContent}
-          categoryStyle={categoryStyle}
-        />
-        <HeroImage heroContent={heroContent} />
-      </div>
-    </section>
-  );
-});
+    return (
+      <section className="relative md:px-6 py-10 md:py-12 lg:px-12 bg-accent">
+        <div className="container mx-auto grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+          <HeroContent
+            type={type}
+            heroContent={heroContent}
+            categoryStyle={categoryStyle}
+          />
+          <HeroImage heroContent={heroContent} />
+        </div>
+      </section>
+    );
+  },
+);
 
 Hero.displayName = "Hero";
