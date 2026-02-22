@@ -15,6 +15,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useBookStore } from "@/features/book-creation/store/book-store";
 import type { BookStore } from "@/features/book-creation/types";
 import { GENERATION_LIMITS } from "@/features/book-creation/types";
@@ -23,6 +24,7 @@ import { isValidFile, fileToDataURL } from "../utils/file-validation";
 import { toast } from "sonner";
 import { useGeneratePreview } from "../hooks/useGeneratePreview";
 import { generateBookPdf } from "../utils/pdf-generator";
+import { cn } from "@/lib/utils";
 import AddPagesModal from "./AddPagesModal";
 
 export default function ImageUploadPage() {
@@ -47,6 +49,9 @@ export default function ImageUploadPage() {
     getPageGenerationCount,
     bookType,
   } = useBookStore();
+
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role?.toLowerCase() === "admin";
 
   const [currentPage, setCurrentPage] = useState(1);
   const [isDragging, setIsDragging] = useState(false);
@@ -80,8 +85,8 @@ export default function ImageUploadPage() {
   const totalPages = pageCount + (includeDedicationPage ? 1 : 0);
 
   const handleConvertToLineArt = async (pageNum: number, image: string) => {
-    // Check daily conversion limit
-    if (!canGeneratePage(pageNum)) {
+    // Check daily conversion limit (Admins have unlimited)
+    if (!isAdmin && !canGeneratePage(pageNum)) {
       toast.error(
         "Daily conversion limit reached! You can only convert one image for free every 24 hours. Complete your book creation to reset this limit, or try again tomorrow.",
       );
@@ -108,10 +113,13 @@ export default function ImageUploadPage() {
         // Auto-select the converted image as the page image
         updatePageImage(pageNum, lineArtImage);
 
-        toast.success("Image converted!");
-        //  toast.success(
-        //   "Image converted! Your daily conversion is complete. You can unlock more by finishing your book or waiting until tomorrow.",
-        // );
+        if (isAdmin) {
+          toast.success(
+            "👑 Admin: Image converted successfully (Unlimited access)!",
+          );
+        } else {
+          toast.success("Image converted!");
+        }
       } else {
         toast.error("Failed to convert image. Please try again.");
       }
@@ -392,13 +400,19 @@ export default function ImageUploadPage() {
                   </Button>
 
                   <div
-                    className={`text-sm font-black rounded-xl px-5 py-2.5 border transition-all ${
-                      hasMaxGenerations
-                        ? "bg-green-50 border-green-200 text-green-700 shadow-sm"
-                        : "bg-gray-50 border-gray-200 text-gray-600"
-                    }`}
+                    className={cn(
+                      "text-sm font-black rounded-xl px-5 py-2.5 border transition-all flex items-center gap-2",
+                      isAdmin
+                        ? "bg-orange-50 border-orange-200 text-orange-700 shadow-sm"
+                        : hasMaxGenerations
+                          ? "bg-green-50 border-green-200 text-green-700 shadow-sm"
+                          : "bg-gray-50 border-gray-200 text-gray-600",
+                    )}
                   >
-                    {generationsUsed}/{maxConversions} Sketches Created
+                    {isAdmin && <span>👑</span>}
+                    {isAdmin
+                      ? "Unlimited Sketches Created"
+                      : `${generationsUsed}/${maxConversions} Sketches Created`}
                   </div>
                 </div>
               </div>

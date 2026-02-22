@@ -5,8 +5,9 @@ import { ArrowUpFromLine, PrinterCheck } from "lucide-react";
 import { useBookStore } from "@/features/book-creation/store/book-store";
 import { useGeneratePreview } from "@/features/book-creation/hooks/useGeneratePreview";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import ImagePreviewModal from "./image-preview-modal";
-import { BookStore, GENERATION_LIMITS } from "../types";
+import { BookStore } from "../types";
 import { toast } from "sonner";
 import { useContent } from "@/features/category-page/hooks/use-content";
 import { cn } from "@/lib/utils";
@@ -29,9 +30,8 @@ export default function LandingPage() {
   const canGenerateCover = useBookStore(
     (state: BookStore) => state.canGenerateCover,
   );
-  const coverGenerationCount = useBookStore(
-    (state: BookStore) => state.generationCounts.cover,
-  );
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role?.toLowerCase() === "admin";
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pendingImage, setPendingImage] = useState<string | null>(null);
 
@@ -120,8 +120,8 @@ export default function LandingPage() {
   const handleConfirmGeneration = async () => {
     if (!pendingImage) return;
 
-    // Check daily conversion limit
-    if (!canGenerateCover()) {
+    // Check daily conversion limit (Admins have unlimited)
+    if (!isAdmin && !canGenerateCover()) {
       toast.error(
         "Daily conversion limit reached! You can only convert one image for free every 24 hours. Complete your book creation to reset this limit, or try again tomorrow.",
       );
@@ -148,11 +148,13 @@ export default function LandingPage() {
       // Reset page selections just in case
       useBookStore.getState().setPendingPageCount(null);
 
-      const remaining =
-        GENERATION_LIMITS.MAX_COVER - (coverGenerationCount + 1);
-      toast.success(
-        `Cover generated! ${remaining} generation${remaining !== 1 ? "s" : ""} remaining.`,
-      );
+      // const remaining =
+      //   GENERATION_LIMITS.MAX_COVER - (coverGenerationCount + 1);
+      if (isAdmin) {
+        toast.success("👑 Admin: Cover generated successfully (Unlimited)!");
+      } else {
+        toast.success(`Cover generated!`);
+      }
 
       setIsModalOpen(false);
       setPendingImage(null);
@@ -199,6 +201,14 @@ export default function LandingPage() {
               Upload an image to convert it into a sketch
             </p>
 
+            {isAdmin && (
+              <div className="flex justify-center mb-4">
+                <span className="text-xs font-black uppercase tracking-wider bg-orange-100 text-orange-600 px-3 py-1 rounded-full border border-orange-200 animate-bounce">
+                  👑 Admin: Unlimited Conversions
+                </span>
+              </div>
+            )}
+
             <label className="cursor-pointer">
               <input
                 type="file"
@@ -208,10 +218,12 @@ export default function LandingPage() {
               />
               <div
                 className={cn(
-                  "w-full font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-colors",
+                  "w-full font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-all",
                   !bookType || bookType.toLowerCase() === "home"
                     ? "bg-muted text-muted-foreground cursor-not-allowed"
-                    : "bg-primary hover:bg-primary/90 text-white cursor-pointer",
+                    : isAdmin
+                      ? "bg-primary hover:bg-primary/90 text-white cursor-pointer shadow-[0_0_15px_rgba(255,139,54,0.3)] border-2 border-orange-200"
+                      : "bg-primary hover:bg-primary/90 text-white cursor-pointer",
                 )}
               >
                 <ArrowUpFromLine className="w-5 h-5" />

@@ -30,7 +30,12 @@ export default function ImagePreviewModal({
 }: ImagePreviewModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md" showCloseButton={!isLoading}>
+      <DialogContent
+        className="sm:max-w-md"
+        showCloseButton={true}
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>Generate Sketch Preview</DialogTitle>
           <DialogDescription>
