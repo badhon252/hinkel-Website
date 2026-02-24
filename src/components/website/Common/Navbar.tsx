@@ -360,14 +360,21 @@ export default function Navbar() {
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center space-x-4">
           {status === "unauthenticated" ? (
-            <Link href="/login">
-              <Button
-                variant="outline"
-                className="border-primary text-primary-foreground hover:bg-primary/10 px-8 rounded-lg font-semibold transition-all"
-              >
-                Log In
-              </Button>
-            </Link>
+            <>
+              <Link href="/register">
+                <Button className="border-primary text-white hover:bg-primary/80 px-8 rounded-lg font-semibold transition-all">
+                  Create an Account
+                </Button>
+              </Link>
+              <Link href="/login">
+                <Button
+                  variant="outline"
+                  className="border-primary text-primary-foreground hover:bg-primary/10 px-8 rounded-lg font-semibold transition-all"
+                >
+                  Log In
+                </Button>
+              </Link>
+            </>
           ) : (
             <UserProfile session={session} />
           )}
@@ -448,11 +455,16 @@ export default function Navbar() {
                   </div>
                 ))}
                 {status === "unauthenticated" && (
-                  <div className="flex flex-col px-5 pt-6 mt-4 border-t">
-                    <Link href="/login" onClick={handleMobileNavClose}>
+                  <div className="flex flex-col px-5 pt-6 mt-4 border-t space-y-2">
+                    <Link href="/register">
+                      <Button className="border-primary text-white hover:bg-primary/80 px-8 rounded-lg font-semibold transition-all w-full">
+                        Create an Account
+                      </Button>
+                    </Link>
+                    <Link href="/login">
                       <Button
                         variant="outline"
-                        className="w-full border-primary text-primary"
+                        className="border-primary text-primary-foreground hover:bg-primary/10 px-8 rounded-lg font-semibold transition-all w-full"
                       >
                         Log In
                       </Button>

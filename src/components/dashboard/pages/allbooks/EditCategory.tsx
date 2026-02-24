@@ -64,13 +64,24 @@ const EditCategory = ({ category, onSuccess }: EditCategoryProps) => {
       formData.append("image", values.image[0]);
     }
 
-    // Handle gallery: send existing URLs and new Files
+    // Handle gallery: only send new Files under 'gallery'
     galleryPreviews.forEach((item) => {
       if (item instanceof File) {
         formData.append("gallery", item);
-      } else if (typeof item === "string") {
-        formData.append("gallery", item);
       }
+    });
+
+    // Detect removed gallery URLs and append to 'removeGalleryUrls'
+    const initialGallery = category.gallery || [];
+    const currentUrls = galleryPreviews.filter(
+      (item) => typeof item === "string",
+    );
+    const removedUrls = initialGallery.filter(
+      (url) => !currentUrls.includes(url as string),
+    );
+
+    removedUrls.forEach((url) => {
+      formData.append("removeGalleryUrls", url as string);
     });
 
     updateCategory(
@@ -112,7 +123,7 @@ const EditCategory = ({ category, onSuccess }: EditCategoryProps) => {
     <div className="relative overflow-hidden p-6 rounded-3xl">
       {/* Animated Background Layers */}
       <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-3xl" />
-      <div className="absolute inset-0 bg-gradient-to-br from-[#ff7a00]/5 via-transparent to-blue-500/5" />
+      <div className="absolute inset-0 bg-linear-to-br from-[#ff7a00]/5 via-transparent to-blue-500/5" />
 
       {/* Decorative Floating Orbs */}
       <div className="absolute -top-12 -right-12 w-32 h-32 bg-[#ff7a00] rounded-full blur-[60px] opacity-10 animate-pulse" />
@@ -311,7 +322,7 @@ const EditCategory = ({ category, onSuccess }: EditCategoryProps) => {
             <Button
               type="submit"
               disabled={isPending}
-              className="w-full h-14 bg-gradient-to-r from-[#ff7a00] to-[#ff9d42] hover:from-[#ff8a20] hover:to-[#ffad5a] text-white font-black uppercase tracking-[0.2em] rounded-xl shadow-[0_10px_20px_-10px_rgba(255,122,0,0.5)] transition-all duration-500 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:grayscale"
+              className="w-full h-14 bg-linear-to-r from-[#ff7a00] to-[#ff9d42] hover:from-[#ff8a20] hover:to-[#ffad5a] text-white font-black uppercase tracking-[0.2em] rounded-xl shadow-[0_10px_20px_-10px_rgba(255,122,0,0.5)] transition-all duration-500 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:grayscale"
             >
               {isPending ? (
                 <div className="flex items-center gap-2">

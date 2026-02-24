@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { useContent } from "@/features/category-page/hooks/use-content";
 import { cn } from "@/lib/utils";
 import { BookStyleSelector } from "./BookStyleSelector";
+import { AuthPromptModal } from "./auth-prompt-modal";
 
 export default function LandingPage() {
   const setStep = useBookStore((state: BookStore) => state.setStep);
@@ -30,10 +31,11 @@ export default function LandingPage() {
   const canGenerateCover = useBookStore(
     (state: BookStore) => state.canGenerateCover,
   );
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const isAdmin = session?.user?.role?.toLowerCase() === "admin";
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pendingImage, setPendingImage] = useState<string | null>(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   // Navigation hooks
   const router = useRouter();
@@ -213,6 +215,12 @@ export default function LandingPage() {
               <input
                 type="file"
                 accept="image/jpeg, image/png, image/webp"
+                onClick={(e) => {
+                  if (status === "unauthenticated") {
+                    e.preventDefault();
+                    setIsAuthModalOpen(true);
+                  }
+                }}
                 onChange={handleFileUpload}
                 className="hidden"
               />
@@ -272,6 +280,12 @@ export default function LandingPage() {
         imagePreview={pendingImage}
         isLoading={loading}
         error={error}
+      />
+
+      {/* Auth Prompt Modal */}
+      <AuthPromptModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
       />
     </>
   );
