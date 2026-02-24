@@ -26,3 +26,15 @@ export async function exportOrders(
     throw error;
   }
 }
+
+export async function toggleOrderArchive(orderId: string, isActive: boolean) {
+  try {
+    const res = await api.patch(`order/admin/archive/${orderId}`, {
+      isActive,
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error updating order archive status:", error);
+    throw error;
+  }
+}

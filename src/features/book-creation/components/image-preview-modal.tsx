@@ -48,7 +48,7 @@ export default function ImagePreviewModal({
         <div className="flex flex-col items-center gap-4 py-4">
           {/* Image Preview */}
           {imagePreview && (
-            <div className="relative w-full aspect-square max-w-[300px] rounded-lg overflow-hidden border border-border">
+            <div className="relative w-full aspect-square max-w-[500px] rounded-lg overflow-hidden border border-border">
               <Image
                 src={imagePreview}
                 alt="Preview"

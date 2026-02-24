@@ -25,6 +25,7 @@ export interface Order {
   title?: string;
   refundStatus?: string;
   stripePaymentIntentId?: string;
+  isActive?: boolean;
 }
 
 export function useAllOrders(
