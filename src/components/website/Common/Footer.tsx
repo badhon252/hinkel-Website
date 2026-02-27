@@ -14,10 +14,13 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import { useCategoryHeader } from "@/features/category-page/hooks/use-categoryheader";
+import { useContent } from "@/features/category-page/hooks/use-content";
+import type { CategoryContent } from "@/features/category-page/types";
 
 // Extract link data to reduce repetition and improve maintainability
 const FOOTER_LINKS = {
-  product: [
+  styles: [
     { label: "Kids", href: "/category/kids" },
     { label: "Seniors", href: "/category/seniors" },
     { label: "Adults", href: "/category/adults" },
@@ -28,12 +31,13 @@ const FOOTER_LINKS = {
     { label: "About", href: "/about-us" },
     { label: "Terms of Conditions", href: "/terms-conditions" },
     { label: "Refund Policy", href: "/refund" },
-  ],
-  legal: [
     { label: "Privacy Policy", href: "/privacy-policy" },
-    { label: "Refund Policy", href: "/refund" },
-    // { label: "Cookies", href: "/cookies" },
   ],
+  // legal: [
+  //   { label: "Privacy Policy", href: "/privacy-policy" },
+  //   { label: "Refund Policy", href: "/refund" },
+  //   // { label: "Cookies", href: "/cookies" },
+  // ],
 } as const;
 
 // Extracted sub-components for better code splitting and reusability
@@ -82,6 +86,8 @@ const TrustSeal = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
+  const { data: usePostCategoryHeader } = useCategoryHeader();
+  console.log(usePostCategoryHeader, "categoryHeader");
   return (
     <div
       className="relative flex flex-col items-center group"
@@ -139,6 +145,27 @@ const TrustSeal = ({
 
 const Footer = () => {
   // const currentYear = new Date().getFullYear();
+  const { data: contentData } = useContent({ limit: 12 });
+
+  let styleLinks: readonly { label: string; href: string }[] =
+    FOOTER_LINKS.styles;
+
+  if (contentData?.data && contentData.data.length > 0) {
+    const dynamicLinks: { label: string; href: string }[] = contentData.data
+      .filter((c: CategoryContent) => c.type?.toLowerCase() !== "home")
+      .map((c: CategoryContent) => ({
+        label: c.type ? c.type.charAt(0).toUpperCase() + c.type.slice(1) : "",
+        href: `/category/${c.type}`,
+      }));
+
+    const uniqueLinks = Array.from(
+      new Map(dynamicLinks.map((item) => [item.href, item])).values(),
+    );
+
+    if (uniqueLinks.length > 0) {
+      styleLinks = uniqueLinks;
+    }
+  }
 
   return (
     <footer
@@ -169,8 +196,8 @@ const Footer = () => {
             </p> */}
           </div>
 
-          {/* Product Links */}
-          <FooterLinkSection title="Styles" links={FOOTER_LINKS.product} />
+          {/* Category styles Links */}
+          <FooterLinkSection title="All Styles" links={styleLinks} />
 
           {/* Resources Links */}
           <FooterLinkSection
@@ -247,11 +274,11 @@ const Footer = () => {
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-8 pt-4 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="mt-8 pt-4 border-t border-gray-100 flex flex-col md:flex-row justify-center items-center gap-4">
           <p className="text-gray-400 text-sm">
             ©sktchLABS: Illustrating your world, one page at a time.
           </p>
-          <nav aria-label="Legal links">
+          {/* <nav aria-label="Legal links">
             <ul className="flex gap-8">
               {FOOTER_LINKS.legal.map(({ label, href }) => (
                 <li key={href}>
@@ -264,7 +291,7 @@ const Footer = () => {
                 </li>
               ))}
             </ul>
-          </nav>
+          </nav> */}
         </div>
       </div>
     </footer>
