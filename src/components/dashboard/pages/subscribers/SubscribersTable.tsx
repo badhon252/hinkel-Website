@@ -9,6 +9,9 @@ import {
   Loader2,
   MailQuestion,
   Download,
+  ArrowUpDown,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import {
   useSubscribers,
@@ -36,15 +39,35 @@ interface Subscriber {
 
 export function SubscribersTable() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [page, setPage] = useState(1);
+  const limit = 20;
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+      setPage(1); // Reset to first page on search
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   const {
     data: subscribersData,
     isLoading,
     error,
-  } = useSubscribers({ q: searchTerm });
+  } = useSubscribers({
+    q: debouncedSearchTerm,
+    sortBy: "createdAt",
+    sortOrder,
+    page,
+    limit,
+  });
   const { mutate: deleteSub, isPending: isDeleting } = useDeleteSubscriber();
   const [isExporting, setIsExporting] = useState(false);
 
-  const subscribers = subscribersData?.data || [];
+  const subscribers = subscribersData?.items || subscribersData?.data || [];
+  const meta = subscribersData?.meta || { total: 0, pages: 1 };
 
   const handleExport = async () => {
     try {
@@ -140,7 +163,7 @@ export function SubscribersTable() {
           </Button>
           <div className="text-sm font-medium text-slate-500 whitespace-nowrap">
             Total Subscribers:{" "}
-            <span className="text-slate-900">{subscribers.length}</span>
+            <span className="text-slate-900">{meta.total}</span>
           </div>
         </div>
       </div>
@@ -171,8 +194,16 @@ export function SubscribersTable() {
                   <th className="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest">
                     Email Address
                   </th>
-                  <th className="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest">
-                    Subscription Date
+                  <th
+                    className="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest cursor-pointer hover:bg-slate-100 transition-colors group/header"
+                    onClick={() =>
+                      setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"))
+                    }
+                  >
+                    <div className="flex items-center gap-2">
+                      Subscription Date
+                      <ArrowUpDown className="h-4 w-4 text-slate-300 group-hover/header:text-slate-500 transition-colors" />
+                    </div>
                   </th>
                   <th className="px-6 py-4 text-right text-xs font-black text-slate-400 uppercase tracking-widest">
                     Actions
@@ -252,6 +283,46 @@ export function SubscribersTable() {
           </div>
         )}
       </div>
+
+      {/* Pagination */}
+      {meta.pages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-6">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="h-10 w-10 rounded-xl"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <div className="flex items-center gap-1">
+            {Array.from({ length: meta.pages }).map((_, i) => (
+              <Button
+                key={i}
+                variant={page === i + 1 ? "default" : "outline"}
+                onClick={() => setPage(i + 1)}
+                className={`h-10 w-10 rounded-xl font-bold ${
+                  page === i + 1
+                    ? "bg-[#ff7a00] hover:bg-[#ff7a00]/90 text-white"
+                    : ""
+                }`}
+              >
+                {i + 1}
+              </Button>
+            ))}
+          </div>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setPage((p) => Math.min(meta.pages, p + 1))}
+            disabled={page === meta.pages}
+            className="h-10 w-10 rounded-xl"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
