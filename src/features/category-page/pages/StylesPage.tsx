@@ -48,7 +48,7 @@ export default function StylesPage() {
     title: "Unlock Your Creative Vision",
     subtitle:
       "Explore our curated collection of sketch styles. Each one is designed to transform your photos into a unique, printable coloring book experience.",
-    badgeText: "Curated Collection 2026",
+    badgeText: "Curated Collection",
   };
 
   if (isContentLoading || isStyleLoading) {

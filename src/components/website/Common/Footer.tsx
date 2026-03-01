@@ -197,7 +197,7 @@ const Footer = () => {
           </div>
 
           {/* Category styles Links */}
-          <FooterLinkSection title="All Styles" links={styleLinks} />
+          <FooterLinkSection title="Collections" links={styleLinks} />
 
           {/* Resources Links */}
           <FooterLinkSection
