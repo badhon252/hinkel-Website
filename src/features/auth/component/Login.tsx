@@ -117,7 +117,7 @@ const Login = () => {
               href={`/register?callbackUrl=${encodeURIComponent(callbackUrl)}`}
               className="text-primary font-semibold hover:text-primary/80 transition-all hover:underline"
             >
-              Create an Free ccount
+              Create a Free Account
             </Link>
           </div>
 

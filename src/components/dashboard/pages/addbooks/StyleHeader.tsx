@@ -99,7 +99,7 @@ export const StyleHeader = () => {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold text-slate-900">
-                Editing Style Header
+                Editing Collections Header
               </h3>
               <Button
                 variant="ghost"
@@ -147,7 +147,7 @@ export const StyleHeader = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, subtitle: e.target.value })
                   }
-                  placeholder="e.g. Discover our latest trends and styles..."
+                  placeholder="e.g. Discover our latest trends and Collections..."
                   className="bg-slate-50 border-slate-200 rounded-xl focus:ring-[#ff7a00]/20 focus:border-[#ff7a00]/50"
                 />
               </div>

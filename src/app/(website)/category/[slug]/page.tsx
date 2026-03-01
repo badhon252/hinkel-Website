@@ -56,7 +56,7 @@ export default function CategoryPage({
         </section>
       )}
 
-      {contents.map((item: CategoryContent, index: number) => (
+      {/* {contents.map((item: CategoryContent, index: number) => (
         <Fragment key={item._id || index}>
           {item.gallery && item.gallery.length > 0 && (
             <GallerySection
@@ -65,7 +65,7 @@ export default function CategoryPage({
             />
           )}
         </Fragment>
-      ))}
+      ))} */}
 
       {contents.length === 0 && !cmsContent && (
         <div className="py-20 text-center">

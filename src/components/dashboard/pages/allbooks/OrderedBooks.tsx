@@ -242,10 +242,11 @@ const OrderedBooks = () => {
                 <SelectValue placeholder="Delivery Status" />
               </SelectTrigger>
               <SelectContent className="bg-white">
-                <SelectItem value="all">All Delivery</SelectItem>
+                <SelectItem value="all">All</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="approved">Approved</SelectItem>
                 <SelectItem value="rejected">Rejected</SelectItem>
+                <SelectItem value="delivered">Delivered</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -506,6 +507,12 @@ const OrderedBooks = () => {
                                   className="text-[10px] font-bold uppercase tracking-widest"
                                 >
                                   Rejected
+                                </SelectItem>
+                                <SelectItem
+                                  value="delivered"
+                                  className="text-[10px] font-bold uppercase tracking-widest"
+                                >
+                                  Delivered
                                 </SelectItem>
                               </SelectContent>
                             </Select>

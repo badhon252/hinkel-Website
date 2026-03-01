@@ -11,10 +11,10 @@ const Addbooks = () => {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-2">
           <h1 className="text-3xl font-black text-slate-900 tracking-tight">
-            Category <span className="text-[#ff7a00]">Style</span>
+            Category <span className="text-[#ff7a00]">Collections</span>
           </h1>
           <p className="text-slate-500 font-medium max-w-lg">
-            Manage your style categories and rich content modules for the
+            Manage your Collections categories and rich content modules for the
             storefront.
           </p>
         </div>
@@ -42,14 +42,14 @@ const Addbooks = () => {
             className="px-6 py-3 rounded-xl border border-slate-200 bg-white data-[state=active]:bg-[#ff7a00] data-[state=active]:border-[#ff7a00] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-[#ff7a00]/20 transition-all duration-300 font-bold gap-2 text-slate-600 hover:border-[#ff7a00]/50"
           >
             <Layers className="w-4 h-4" />
-            Style Pages
+            Collections Pages
           </TabsTrigger>
           <TabsTrigger
             value="style-contents"
             className="px-6 py-3 rounded-xl border border-slate-200 bg-white data-[state=active]:bg-[#ff7a00] data-[state=active]:border-[#ff7a00] data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-[#ff7a00]/20 transition-all duration-300 font-bold gap-2 text-slate-600 hover:border-[#ff7a00]/50"
           >
             <FileText className="w-4 h-4" />
-            Style Contents
+            Collections Contents
           </TabsTrigger>
         </TabsList>
 

@@ -169,11 +169,11 @@ export default function LandingPage() {
     <>
       <div className="min-h-screen bg-linear-to-br from-background to-background/80 flex items-center justify-center px-4">
         <div className="max-w-2xl w-full text-center">
-          <div className="mb-6 flex justify-center">
+          {/* <div className="mb-6 flex justify-center">
             <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center">
               <span className="text-white font-bold text-2xl">✦</span>
             </div>
-          </div>
+          </div> */}
 
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             Picture to Sketch Book Creator

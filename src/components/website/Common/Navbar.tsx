@@ -64,7 +64,7 @@ interface DesktopCategoryDropdownProps {
 // Constants
 const MENU_ITEMS: MenuItem[] = [
   { href: "/", label: "Home" },
-  { href: "/styles", label: "Styles" },
+  { href: "/collections", label: "Collections" },
   { href: "/about-us", label: "About" },
   { href: "/contact-us", label: "Contact Us" },
 ];
@@ -195,7 +195,7 @@ const DesktopCategoryDropdown = memo(
       className="relative h-full flex items-center"
     >
       <Link
-        href="/styles"
+        href="/collections"
         className={cn(
           "flex items-center gap-1 transition-all duration-200 hover:text-primary relative pb-1",
           isActive || showDropdown
@@ -203,7 +203,7 @@ const DesktopCategoryDropdown = memo(
             : "text-primary-foreground",
         )}
       >
-        Styles
+        Collections
         <ChevronDown
           className={cn(
             "w-4 h-4 transition-transform duration-200",
@@ -330,7 +330,7 @@ export default function Navbar() {
         <ul className="hidden md:flex space-x-8 font-medium items-center">
           {MENU_ITEMS.map((item) => (
             <li key={item.href} className="relative h-full flex items-center">
-              {item.label === "Styles" ? (
+              {item.label === "Collections" ? (
                 <DesktopCategoryDropdown
                   categories={categories}
                   isActive={isActive(item.href)}
@@ -363,7 +363,7 @@ export default function Navbar() {
             <>
               <Link href="/register">
                 <Button className="border-primary text-white hover:bg-primary/80 px-8 rounded-lg font-semibold transition-all bg-black">
-                  Create an Free ccount
+                  Create a Free Account
                 </Button>
               </Link>
               <Link href="/login">
@@ -423,11 +423,11 @@ export default function Navbar() {
                         </CollapsibleTrigger>
                         <CollapsibleContent className="mt-2 space-y-1">
                           <Link
-                            href="/styles"
+                            href="/collections"
                             onClick={handleMobileNavClose}
                             className="block px-5 py-2 pl-8 text-sm font-medium text-gray-600 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
                           >
-                            All Styles
+                            Collections
                           </Link>
                           {categories.map((category: CategoryContent) => (
                             <MobileCategoryItem
@@ -458,7 +458,7 @@ export default function Navbar() {
                   <div className="flex flex-col px-5 pt-6 mt-4 border-t space-y-2">
                     <Link href="/register">
                       <Button className="border-primary text-white hover:bg-primary/80 px-8 rounded-lg font-semibold transition-all w-full bg-black">
-                        Create an Free ccount
+                        Create a Free Account
                       </Button>
                     </Link>
                     <Link href="/login">
