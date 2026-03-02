@@ -9,6 +9,8 @@ import {
   Loader2,
   MailQuestion,
   Download,
+  ArrowUp,
+  ArrowDown,
   ArrowUpDown,
   ChevronLeft,
   ChevronRight,
@@ -40,6 +42,7 @@ interface Subscriber {
 export function SubscribersTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [page, setPage] = useState(1);
   const limit = 20;
@@ -58,11 +61,31 @@ export function SubscribersTable() {
     error,
   } = useSubscribers({
     q: debouncedSearchTerm,
-    sortBy: "createdAt",
+    sortBy,
     sortOrder,
     page,
     limit,
   });
+
+  const handleSort = (column: string) => {
+    if (sortBy === column) {
+      setSortOrder(sortOrder === "desc" ? "asc" : "desc");
+    } else {
+      setSortBy(column);
+      setSortOrder("asc");
+    }
+    setPage(1);
+  };
+
+  const getSortIcon = (column: string) => {
+    if (sortBy !== column)
+      return <ArrowUpDown className="h-4 w-4 text-slate-300" />;
+    return sortOrder === "desc" ? (
+      <ArrowDown className="h-4 w-4 text-[#ff7a00]" />
+    ) : (
+      <ArrowUp className="h-4 w-4 text-[#ff7a00]" />
+    );
+  };
   const { mutate: deleteSub, isPending: isDeleting } = useDeleteSubscriber();
   const [isExporting, setIsExporting] = useState(false);
 
@@ -191,18 +214,22 @@ export function SubscribersTable() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-50/50 border-b border-slate-100">
-                  <th className="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest">
-                    Email Address
+                  <th
+                    className="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest cursor-pointer hover:bg-slate-100 transition-colors group/header"
+                    onClick={() => handleSort("email")}
+                  >
+                    <div className="flex items-center gap-2">
+                      Email Address
+                      {getSortIcon("email")}
+                    </div>
                   </th>
                   <th
                     className="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest cursor-pointer hover:bg-slate-100 transition-colors group/header"
-                    onClick={() =>
-                      setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"))
-                    }
+                    onClick={() => handleSort("createdAt")}
                   >
                     <div className="flex items-center gap-2">
                       Subscription Date
-                      <ArrowUpDown className="h-4 w-4 text-slate-300 group-hover/header:text-slate-500 transition-colors" />
+                      {getSortIcon("createdAt")}
                     </div>
                   </th>
                   <th className="px-6 py-4 text-right text-xs font-black text-slate-400 uppercase tracking-widest">
