@@ -81,9 +81,9 @@ export function CouponTable() {
             <Plus className="h-4 w-4" />
             <span>Add New Coupon</span>
           </Button>
-          <div className="text-sm font-medium text-slate-500 whitespace-nowrap">
+          {/* <div className="text-sm font-medium text-slate-500 whitespace-nowrap">
             Total Coupons: <span className="text-slate-900">{totalCount}</span>
-          </div>
+          </div> */}
         </div>
       </div>
 
