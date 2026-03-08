@@ -106,7 +106,7 @@ const HeroContent = memo(
     };
 
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 md:mt-10">
         {shouldShowBadge(type) && (
           <Badge
             variant="outline"
@@ -212,7 +212,7 @@ export const Hero = memo(
 
     return (
       <section className="relative md:px-6 py-10 md:py-12 lg:px-12 bg-accent">
-        <div className="container mx-auto grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+        <div className="container mx-auto grid md:grid-cols-2 gap-8 md:gap-12 items-start">
           <HeroContent
             type={type}
             heroContent={heroContent}

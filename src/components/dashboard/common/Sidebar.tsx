@@ -15,6 +15,7 @@ import {
   Users,
   Key,
   FileSignature,
+  Ticket,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -46,8 +47,14 @@ const navigation = [
         href: "/dashboard/setPricing",
         icon: NotebookText,
       },
+      {
+        name: "Manage Coupons",
+        href: "/dashboard/manage-coupon",
+        icon: Ticket,
+      },
     ],
   },
+
   {
     group: "Audience",
     items: [
@@ -113,7 +120,7 @@ export function SidebarContent({
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* Logo */}
-      <div className="flex items-center py-8 justify-center px-6 flex-shrink-0">
+      <div className="flex items-center py-8 justify-center px-6 shrink-0">
         <Link href="/dashboard" className="flex items-center ">
           <Image
             src="/images/logo.png"
@@ -178,7 +185,7 @@ export function SidebarContent({
       </nav>
 
       {/* Logout */}
-      <div className="border-t border-gray-100 p-4 bg-gray-50/30 flex-shrink-0">
+      <div className="border-t border-gray-100 p-4 bg-gray-50/30 shrink-0">
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button
@@ -191,6 +198,7 @@ export function SidebarContent({
               Log Out
             </Button>
           </DialogTrigger>
+
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle className="text-xl font-bold">

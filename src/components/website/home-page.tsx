@@ -9,7 +9,6 @@ export default function HomePage() {
       <Hero type="home" />
       <CategoryGrid />
       <BookCreationFlow />
-      {/* <Features /> */}
       <FAQ />
     </>
   );

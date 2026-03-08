@@ -80,6 +80,7 @@ export interface ConfirmPaymentRequest {
   deliveryType: DeliveryType;
   orderId?: string;
   bookType?: string;
+  couponCode?: string;
 }
 
 export interface ConfirmPaymentResponse {

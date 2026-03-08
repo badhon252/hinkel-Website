@@ -12,6 +12,10 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { AuthModal } from "@/components/shared/AuthModal";
+import { cn } from "@/lib/utils";
+import { Ticket, Check, X } from "lucide-react";
+import { validateCoupon } from "@/features/dashboard/api/coupon.api";
+import { Coupon } from "@/features/dashboard/types/coupon.types";
 
 export default function BookSetupFormatPage() {
   const setStep = useBookStore((state: BookStore) => state.setStep);
@@ -38,6 +42,10 @@ export default function BookSetupFormatPage() {
   );
   const [errors, setErrors] = useState<{ title?: string }>({});
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [couponError, setCouponError] = useState("");
 
   const steps = ["Cover Art", "Details", "Payment", "Content", "Review"];
 
@@ -122,6 +130,40 @@ export default function BookSetupFormatPage() {
     ];
   }, []);
 
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setIsValidatingCoupon(true);
+    setCouponError("");
+    try {
+      const response = await validateCoupon(couponCode);
+      if (response.success && response.data) {
+        setAppliedCoupon(response.data);
+        toast.success("Coupon applied successfully!");
+      } else {
+        setCouponError("Invalid coupon code");
+        setAppliedCoupon(null);
+      }
+    } catch (err: unknown) {
+      const errorMsg =
+        err && typeof err === "object" && "response" in err
+          ? (err as { response: { data: { message: string } } }).response?.data
+              ?.message
+          : err instanceof Error
+            ? err.message
+            : "Invalid coupon code";
+      setCouponError(errorMsg || "Invalid coupon code");
+      setAppliedCoupon(null);
+    } finally {
+      setIsValidatingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    setCouponError("");
+  };
+
   const handleContinue = async () => {
     const newErrors: { title?: string } = {};
     if (!title.trim()) {
@@ -160,6 +202,7 @@ export default function BookSetupFormatPage() {
         pageCount: selectedPages,
         deliveryType: deliveryTypeMap[selectedFormat],
         bookType: bookType,
+        couponCode: appliedCoupon?.codeName,
       });
 
       if (response.success && response.sessionUrl) {
@@ -285,6 +328,67 @@ export default function BookSetupFormatPage() {
                   />
                 ))}
               </div>
+            )}
+          </div>
+
+          {/* Coupon Section */}
+          <div className="mt-10 pt-8 border-t border-gray-100">
+            <h4 className="text-xl font-normal font-inter text-black mb-4 flex items-center gap-2">
+              <Ticket className="w-5 h-5 text-[#ff8b36]" />
+              <span>Have a Coupon?</span>
+            </h4>
+            <div className="flex flex-col md:flex-row gap-3 max-w-md">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                  placeholder="ENTER CODE"
+                  disabled={!!appliedCoupon || isValidatingCoupon}
+                  className={cn(
+                    "w-full h-12 px-4 rounded-xl border-2 font-medium transition-all focus:outline-none placeholder:text-gray-400",
+                    appliedCoupon
+                      ? "border-green-100 bg-green-50 text-green-700"
+                      : couponError
+                        ? "border-red-100 bg-red-50 text-red-700"
+                        : "border-gray-200 bg-white focus:border-[#ff8b36]",
+                  )}
+                />
+                {appliedCoupon && (
+                  <Check className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-green-600" />
+                )}
+              </div>
+              {!appliedCoupon ? (
+                <button
+                  onClick={handleApplyCoupon}
+                  disabled={!couponCode.trim() || isValidatingCoupon}
+                  className="h-12 px-8 bg-black text-white rounded-xl font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50"
+                >
+                  {isValidatingCoupon ? (
+                    <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+                  ) : (
+                    "Apply"
+                  )}
+                </button>
+              ) : (
+                <button
+                  onClick={handleRemoveCoupon}
+                  className="h-12 px-4 bg-gray-100 text-gray-600 rounded-xl font-semibold hover:bg-gray-200 transition-colors flex items-center justify-center"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+            {couponError && (
+              <p className="text-red-500 text-sm mt-2 ml-1">{couponError}</p>
+            )}
+            {appliedCoupon && (
+              <p className="text-green-600 text-sm mt-2 ml-1 font-medium">
+                Successfully applied:{" "}
+                {appliedCoupon.discountType === "flat"
+                  ? `$${appliedCoupon.discountAmount} OFF`
+                  : `${appliedCoupon.discountAmount}% OFF`}
+              </p>
             )}
           </div>
         </div>
