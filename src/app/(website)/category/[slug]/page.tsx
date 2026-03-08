@@ -45,7 +45,7 @@ export default function CategoryPage({
   const cmsContent = cmsData?.data?.data?.contents?.[0];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-[90vh]">
       <Hero type={slug} heroContent={heroContent} />
 
       {cmsContent?.richText && (

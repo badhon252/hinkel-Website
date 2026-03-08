@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef } from "react";
-import { Book, CreditCard, Image, Wand2, CheckCircle } from "lucide-react";
+import { Book, CreditCard, Image, Wand2 } from "lucide-react";
 import { motion, useScroll, useSpring } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -10,44 +10,44 @@ import { useRouter } from "next/navigation";
 const steps = [
   {
     id: 1,
-    title: "Choose Your Format",
+    title: "Start Your Creative Session",
     description:
-      "Start by selecting how you want to receive your finished masterpiece. You can choose a Professional Printed Coloring Book, a Digital PDF, or a Bundle containing both.",
+      "Create a free, temporary profile. At sketchLabs, your memories stay yours. Your account is private and temporary; we permanently clear all data and photos once your book is complete, ensuring your personal moments are never stored long-term.",
     icon: Book,
     color: "bg-blue-100 text-blue-600",
   },
   {
     id: 2,
-    title: "Secure Your Order",
+    title: "Choose Your Style & Test for Free",
     description:
-      "Complete the checkout process to unlock the creation studio. Once payment is confirmed, you’ll have full access to our image-to-sketch conversion tools to begin building your book.",
+      "Select your artistic look and upload a photo. Whether you want bold, crayon-ready outlines for a Kids Coloring Book or the sophisticated strokes of a Pet Sketchbook, choose the Collection that fits your vision. Upload a photo of Fido to test your first conversion for free.",
     icon: CreditCard,
     color: "bg-purple-100 text-purple-600",
   },
   {
     id: 3,
-    title: "Convert Your Images",
+    title: "Unlock the Full Studio",
     description:
-      "Build your book one page at a time by uploading your favorite photos. For every upload, you get up to three conversion attempts to get the perfect sketch. Simply select the version you like best to lock it in as a page.",
+      "Pick your format and secure access. Choose a Professional Printed Book, a Digital PDF, or a Bundle. Completing your order unlocks the full Lab, providing the page credits and specialized tools you need to convert your entire project.",
     icon: Image,
     color: "bg-pink-100 text-pink-600",
   },
   {
     id: 4,
-    title: "Build & Refine",
+    title: "Explore, Review & Publish",
     description:
-      "Use your 3 image conversions (per page) to refine your book. You can track your progress as you go, ensuring every page meets your vision before moving to the final stage.",
+      "Choose your favorite versions. For every page, you can generate up to three distinct variations to find the conversion that best captures the spirit of your memory. Once you’ve selected your favorites and flipped through the Review Gallery, hit 'Finalize' to bring your masterpiece to life.",
     icon: Wand2,
     color: "bg-amber-100 text-amber-600",
   },
-  {
-    id: 5,
-    title: "Final Review & Publish",
-    description:
-      "Once all pages are set, enter the Review Gallery. Here, you can flip through your entire book one last time. If everything looks perfect, hit Finalize to send your book to print or generate your digital download!",
-    icon: CheckCircle,
-    color: "bg-green-100 text-green-600",
-  },
+  // {
+  //   id: 5,
+  //   title: "Final Review & Publish",
+  //   description:
+  //     "Once all pages are set, enter the Review Gallery. Here, you can flip through your entire book one last time. If everything looks perfect, hit Finalize to send your book to print or generate your digital download!",
+  //   icon: CheckCircle,
+  //   color: "bg-green-100 text-green-600",
+  // },
 ];
 
 const BookCreationFlow = () => {
