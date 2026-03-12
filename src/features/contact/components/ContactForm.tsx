@@ -253,7 +253,7 @@ PrivacyPolicyField.displayName = "PrivacyPolicyField";
 const ContactImage = memo(() => (
   <div className="order-1 lg:order-2 relative h-[400px] md:h-[600px] w-full rounded-2xl overflow-hidden shadow-2xl">
     <Image
-      src="/images/contact_woman_camera.png"
+      src="/images/contact-page.jpg"
       alt="Professional woman with camera ready to assist you"
       fill
       className="object-cover"
