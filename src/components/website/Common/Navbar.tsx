@@ -65,6 +65,7 @@ interface DesktopCategoryDropdownProps {
 const MENU_ITEMS: MenuItem[] = [
   { href: "/", label: "Home" },
   { href: "/collections", label: "Collections" },
+  { href: "/pricing", label: "Pricing" },
   { href: "/about-us", label: "About" },
   { href: "/contact-us", label: "Contact Us" },
 ];
