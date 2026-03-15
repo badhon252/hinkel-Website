@@ -227,7 +227,7 @@ const RichTextEditor = ({
 
   return (
     <div
-      className={`border border-white/10 rounded-xl overflow-hidden bg-white/5 ${className}`}
+      className={`border border-white/10 rounded-xl overflow-hidden bg-white/5 ${className} `}
     >
       <style>{`
         .prose table {
@@ -651,7 +651,7 @@ const RichTextEditor = ({
       </div>
 
       {/* Editor Content */}
-      <EditorContent editor={editor} className="text-white" />
+      <EditorContent editor={editor} className="bg-white! " />
     </div>
   );
 };
