@@ -30,7 +30,7 @@ const FOOTER_LINKS = {
     { label: "Contact", href: "/contact-us" },
     { label: "Pricing", href: "/pricing" },
     { label: "About", href: "/about-us" },
-    { label: "Terms of Conditions", href: "/terms-conditions" },
+    { label: "Terms of Service", href: "/terms-conditions" },
     { label: "Refund Policy", href: "/refund" },
     { label: "Privacy Policy", href: "/privacy-policy" },
   ],
@@ -161,7 +161,7 @@ const Footer = () => {
 
     const uniqueLinks = Array.from(
       new Map(dynamicLinks.map((item) => [item.href, item])).values(),
-    );
+    ).sort((a, b) => a.label.localeCompare(b.label));
 
     if (uniqueLinks.length > 0) {
       styleLinks = uniqueLinks;

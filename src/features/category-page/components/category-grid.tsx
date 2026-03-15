@@ -49,7 +49,9 @@ const CARD_STYLES = {
 
 // Utility Functions
 const filterCategories = (categories: CategoryContent[]): CategoryContent[] => {
-  return categories.filter((c) => c.type?.toLowerCase() !== "home");
+  return categories
+    .filter((c) => c.type?.toLowerCase() !== "home")
+    .sort((a, b) => (a.type || "").localeCompare(b.type || ""));
 };
 
 const checkIfScrollNeeded = (container: HTMLDivElement | null): boolean => {
@@ -99,7 +101,8 @@ const CategoryCard = memo(({ category, index }: CategoryCardProps) => (
 
         {/* Category Title */}
         <h3 className="text-2xl md:text-3xl font-black text-white mb-2 tracking-tight transform translate-y-2 group-hover:translate-y-0 transition-all duration-500 delay-75">
-          {category.type}
+          {category.type &&
+            category.type.charAt(0).toUpperCase() + category.type.slice(1)}
         </h3>
 
         {/* Description / CTA */}
@@ -299,7 +302,7 @@ export function CategoryGrid() {
 
       <div className="container mx-auto relative space-y-10">
         {/* Header */}
-        <div className="text-center space-y-4">
+        <div className="text-center space-y-4 w-3xl mx-auto">
           <HeaderTitle title={headerContent.title} />
           <SubtitleCategory subtitle={headerContent.subtitle} />
         </div>

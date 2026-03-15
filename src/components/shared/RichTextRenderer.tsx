@@ -3,7 +3,6 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
-import Image from "@tiptap/extension-image";
 import Underline from "@tiptap/extension-underline";
 import { Table } from "@tiptap/extension-table";
 import { TableRow } from "@tiptap/extension-table-row";
@@ -11,6 +10,7 @@ import { TableHeader } from "@tiptap/extension-table-header";
 import { TableCell } from "@tiptap/extension-table-cell";
 import { TextAlign } from "@tiptap/extension-text-align";
 import React from "react";
+import { COMMON_EXTENSIONS } from "./editor-extensions";
 
 interface RichTextRendererProps {
   content: string | unknown;
@@ -25,12 +25,8 @@ const RichTextRenderer = ({ content, className }: RichTextRendererProps) => {
       Link.configure({
         openOnClick: true,
       }),
-      Image.configure({
-        inline: true,
-        allowBase64: false,
-        HTMLAttributes: {
-          class: "rounded-lg max-w-full h-auto my-4",
-        },
+      Link.configure({
+        openOnClick: true,
       }),
       TextAlign.configure({
         types: ["heading", "paragraph"],
@@ -52,6 +48,7 @@ const RichTextRenderer = ({ content, className }: RichTextRendererProps) => {
           class: "border border-white/10 p-2 text-white/80",
         },
       }),
+      ...COMMON_EXTENSIONS,
     ],
     immediatelyRender: false,
     content: (() => {
@@ -70,7 +67,7 @@ const RichTextRenderer = ({ content, className }: RichTextRendererProps) => {
     editorProps: {
       attributes: {
         class:
-          "prose prose-invert prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none",
+          "prose dark:prose-invert prose-sm sm:prose mx-auto focus:outline-none",
       },
     },
   });
@@ -105,9 +102,21 @@ const RichTextRenderer = ({ content, className }: RichTextRendererProps) => {
           text-align: left;
           background-color: rgba(255, 255, 255, 0.05);
         }
+        .prose table .column-resize-handle {
+          position: absolute;
+          right: -2px;
+          top: 0;
+          bottom: -2px;
+          width: 4px;
+          background-color: #ff7a00;
+          pointer-events: none;
+        }
         .prose .tableWrapper {
           overflow-x: auto;
           margin: 1.5em 0;
+        }
+        .prose .resize-cursor {
+          cursor: col-resize;
         }
       `}</style>
       <EditorContent editor={editor} />

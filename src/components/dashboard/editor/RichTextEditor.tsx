@@ -2,7 +2,6 @@ import { useEditor, EditorContent, Editor } from "@tiptap/react";
 import { BubbleMenu } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
-import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import Underline from "@tiptap/extension-underline";
 import { Table } from "@tiptap/extension-table";
@@ -11,7 +10,13 @@ import { TableHeader } from "@tiptap/extension-table-header";
 import { TableCell } from "@tiptap/extension-table-cell";
 import { TextAlign } from "@tiptap/extension-text-align";
 import { BubbleMenu as BubbleMenuExtension } from "@tiptap/extension-bubble-menu";
+import {
+  COMMON_EXTENSIONS,
+  FONT_FAMILIES,
+  FONT_SIZES,
+} from "@/components/shared/editor-extensions";
 import { useRef } from "react";
+import { cn } from "@/lib/utils";
 // ... (rest of imports)
 import {
   Bold,
@@ -39,7 +44,13 @@ import {
   Rows,
   Divide,
   ChevronDown,
+  Type,
+  Maximize2,
 } from "lucide-react";
+
+// Custom FontSize Extension is now imported from @/components/shared/editor-extensions
+
+// FONT_FAMILIES and FONT_SIZES are now imported from @/components/shared/editor-extensions
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -76,13 +87,6 @@ const RichTextEditor = ({
       Link.configure({
         openOnClick: false,
       }),
-      Image.configure({
-        inline: true,
-        allowBase64: false,
-        HTMLAttributes: {
-          class: "rounded-lg max-w-full h-auto my-4",
-        },
-      }),
       TextAlign.configure({
         types: ["heading", "paragraph"],
       }),
@@ -104,6 +108,7 @@ const RichTextEditor = ({
         },
       }),
       BubbleMenuExtension,
+      ...COMMON_EXTENSIONS,
     ],
     immediatelyRender: false,
     content:
@@ -118,7 +123,7 @@ const RichTextEditor = ({
     editorProps: {
       attributes: {
         class:
-          "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[150px] p-4",
+          "prose prose-invert prose-sm sm:prose mx-auto focus:outline-none min-h-[150px] p-4",
       },
       handleDrop: (view, event, _slice, moved) => {
         if (!moved && event.dataTransfer?.files?.length) {
@@ -373,8 +378,192 @@ const RichTextEditor = ({
         </BubbleMenu>
       )}
 
+      {/* Image Bubble Menu */}
+      {editor && (
+        <BubbleMenu
+          editor={editor}
+          shouldShow={({ editor: activeEditor }: { editor: Editor }) =>
+            activeEditor.isActive("image")
+          }
+          className="flex items-center gap-1 bg-zinc-900 border border-white/10 p-1 rounded-lg shadow-xl"
+        >
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() =>
+              editor
+                .chain()
+                .focus()
+                .updateAttributes("image", { width: "25%" })
+                .run()
+            }
+            className={
+              editor.isActive("image", { width: "25%" })
+                ? "bg-white/10 text-[#ff7a00]"
+                : "text-white/60"
+            }
+          >
+            25%
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() =>
+              editor
+                .chain()
+                .focus()
+                .updateAttributes("image", { width: "50%" })
+                .run()
+            }
+            className={
+              editor.isActive("image", { width: "50%" })
+                ? "bg-white/10 text-[#ff7a00]"
+                : "text-white/60"
+            }
+          >
+            50%
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() =>
+              editor
+                .chain()
+                .focus()
+                .updateAttributes("image", { width: "75%" })
+                .run()
+            }
+            className={
+              editor.isActive("image", { width: "75%" })
+                ? "bg-white/10 text-[#ff7a00]"
+                : "text-white/60"
+            }
+          >
+            75%
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() =>
+              editor
+                .chain()
+                .focus()
+                .updateAttributes("image", { width: "100%" })
+                .run()
+            }
+            className={
+              editor.isActive("image", { width: "100%" })
+                ? "bg-white/10 text-[#ff7a00]"
+                : "text-white/60"
+            }
+          >
+            100%
+          </Button>
+          <div className="w-px h-4 bg-white/10 mx-1" />
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => editor.commands.deleteSelection()}
+            className="text-red-400 hover:text-red-300 hover:bg-red-400/10"
+          >
+            <Trash2 size={14} />
+          </Button>
+        </BubbleMenu>
+      )}
+
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-1 p-2 border-b border-white/10 bg-white/5">
+        {/* Font Family */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="text-white/60 hover:text-white flex items-center gap-2 px-2"
+            >
+              <Type size={16} />
+              <span className="text-xs hidden sm:inline truncate max-w-[60px]">
+                {FONT_FAMILIES.find((f) =>
+                  editor.isActive("textStyle", { fontFamily: f.value }),
+                )?.label || "Font"}
+              </span>
+              <ChevronDown size={10} />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="bg-slate-900 border-white/10 text-white max-h-60 overflow-y-auto">
+            <DropdownMenuItem
+              onClick={() => editor.chain().focus().unsetFontFamily().run()}
+              className="hover:bg-white/5 cursor-pointer text-xs"
+            >
+              Default Font
+            </DropdownMenuItem>
+            {FONT_FAMILIES.map((f) => (
+              <DropdownMenuItem
+                key={f.value}
+                onClick={() =>
+                  editor.chain().focus().setFontFamily(f.value).run()
+                }
+                className={cn(
+                  "hover:bg-white/5 cursor-pointer text-xs",
+                  editor.isActive("textStyle", { fontFamily: f.value }) &&
+                    "text-[#ff7a00] font-bold",
+                )}
+                style={{ fontFamily: f.value }}
+              >
+                {f.label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Font Size */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="text-white/60 hover:text-white flex items-center gap-2 px-2"
+            >
+              <Maximize2 size={14} />
+              <span className="text-xs hidden sm:inline">
+                {FONT_SIZES.find((s) =>
+                  editor.isActive("textStyle", { fontSize: s }),
+                ) || "Size"}
+              </span>
+              <ChevronDown size={10} />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="bg-slate-900 border-white/10 text-white max-h-60 overflow-y-auto">
+            <DropdownMenuItem
+              onClick={() => editor.chain().focus().unsetFontSize().run()}
+              className="hover:bg-white/5 cursor-pointer text-xs"
+            >
+              Default Size
+            </DropdownMenuItem>
+            {FONT_SIZES.map((s) => (
+              <DropdownMenuItem
+                key={s}
+                onClick={() => editor.chain().focus().setFontSize(s).run()}
+                className={cn(
+                  "hover:bg-white/5 cursor-pointer text-xs",
+                  editor.isActive("textStyle", { fontSize: s }) &&
+                    "text-[#ff7a00] font-bold",
+                )}
+              >
+                {s}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <div className="w-px h-6 bg-white/10 mx-1" />
         <Button
           type="button"
           variant="ghost"
@@ -475,11 +664,15 @@ const RichTextEditor = ({
           type="button"
           variant="ghost"
           size="sm"
-          onClick={() =>
-            editor.chain().focus().toggleHeading({ level: 1 }).run()
-          }
+          onClick={() => {
+            if (editor.isActive("textStyle", { fontSize: "36px" })) {
+              editor.chain().focus().unsetFontSize().run();
+            } else {
+              editor.chain().focus().setFontSize("36px").setBold().run();
+            }
+          }}
           className={
-            editor.isActive("heading", { level: 1 })
+            editor.isActive("textStyle", { fontSize: "36px" })
               ? "bg-white/10 text-[#ff7a00]"
               : "text-white/60"
           }
@@ -490,11 +683,15 @@ const RichTextEditor = ({
           type="button"
           variant="ghost"
           size="sm"
-          onClick={() =>
-            editor.chain().focus().toggleHeading({ level: 2 }).run()
-          }
+          onClick={() => {
+            if (editor.isActive("textStyle", { fontSize: "30px" })) {
+              editor.chain().focus().unsetFontSize().run();
+            } else {
+              editor.chain().focus().setFontSize("30px").setBold().run();
+            }
+          }}
           className={
-            editor.isActive("heading", { level: 2 })
+            editor.isActive("textStyle", { fontSize: "30px" })
               ? "bg-white/10 text-[#ff7a00]"
               : "text-white/60"
           }
