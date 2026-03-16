@@ -121,7 +121,7 @@ const HeroContent = memo(
           </Badge>
         )}
 
-        <h1 className="text-5xl md:text-6xl font-black tracking-tight text-secondary-foreground leading-tight">
+        <h1 className="text-4xl md:text-5xl font-black tracking-tight text-secondary-foreground leading-tight">
           {heroContent?.title || DEFAULT_CONTENT.title}
         </h1>
 

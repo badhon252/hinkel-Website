@@ -65,6 +65,7 @@ interface DesktopCategoryDropdownProps {
 const MENU_ITEMS: MenuItem[] = [
   { href: "/", label: "Home" },
   { href: "/collections", label: "Collections" },
+  { href: "/pricing", label: "Pricing" },
   { href: "/about-us", label: "About" },
   { href: "/contact-us", label: "Contact Us" },
 ];
@@ -263,9 +264,11 @@ export default function Navbar() {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const categories =
-    contentData?.data?.filter(
-      (c: CategoryContent) => c.type?.toLowerCase() !== "home",
-    ) || [];
+    contentData?.data
+      ?.filter((c: CategoryContent) => c.type?.toLowerCase() !== "home")
+      .sort((a: CategoryContent, b: CategoryContent) =>
+        (a.type || "").localeCompare(b.type || ""),
+      ) || [];
 
   const isActive = useCallback(
     (href: string) => isActiveRoute(pathname, href),

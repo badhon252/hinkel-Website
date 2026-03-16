@@ -44,7 +44,12 @@ export function CategoryShow() {
     return () => window.removeEventListener("resize", checkResolution);
   }, []);
 
-  const categories = contentData?.data || [];
+  const categories =
+    contentData?.data
+      ?.slice()
+      .sort((a: CategoryContent, b: CategoryContent) =>
+        (a.type || "").localeCompare(b.type || ""),
+      ) || [];
 
   if (error) {
     return (

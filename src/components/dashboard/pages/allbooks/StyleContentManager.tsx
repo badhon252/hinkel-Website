@@ -47,7 +47,7 @@ const StyleContentManager = () => {
   const { mutate: deleteCms, isPending: isDeleting } = useDeleteCms();
   console.log(isDeleting);
   const contents = cmsData?.data?.data?.contents || [];
-  const availableTypes = typesData?.data?.data || [];
+  const availableTypes = (typesData?.data?.data || []).slice().sort();
 
   const filteredContents = contents.filter(
     (item: CmsContent) =>
