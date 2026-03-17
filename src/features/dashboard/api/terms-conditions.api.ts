@@ -13,7 +13,7 @@ export const getTermConditionApi = async (): Promise<TermConditionResponse> => {
     );
     return res.data;
   } catch (error) {
-    console.error("Error fetching Terms & Conditions:", error);
+    console.error("Error fetching Terms of Service:", error);
     throw error;
   }
 };
@@ -32,7 +32,7 @@ export const createTermConditionApi = async (
     );
     return res.data;
   } catch (error) {
-    console.error("Error creating Terms & Conditions:", error);
+    console.error("Error creating Terms of Service:", error);
     throw error;
   }
 };
@@ -52,7 +52,7 @@ export const updateTermConditionApi = async (
     );
     return res.data;
   } catch (error) {
-    console.error("Error updating Terms & Conditions:", error);
+    console.error("Error updating Terms of Service:", error);
     throw error;
   }
 };
@@ -70,7 +70,7 @@ export const deleteTermConditionApi = async (
     );
     return res.data;
   } catch (error) {
-    console.error("Error deleting Terms & Conditions:", error);
+    console.error("Error deleting Terms of Service:", error);
     throw error;
   }
 };

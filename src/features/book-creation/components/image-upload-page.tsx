@@ -163,7 +163,7 @@ export default function ImageUploadPage() {
       toast.success("Image uploaded successfully!");
 
       // Auto-trigger conversion to sketch version
-      await handleConvertToLineArt(pageNum, imageData);
+      // await handleConvertToLineArt(pageNum, imageData);
     } catch (err) {
       console.error("Image processing error:", err);
       toast.error("Failed to process image. Please try again.");
@@ -301,6 +301,24 @@ export default function ImageUploadPage() {
         onStepClick={handleStepClick}
       />
 
+      {/* Top Preview Button Popup - Only on last page */}
+      {currentPage === totalPages && (
+        <div className="sticky top-0 z-50 w-full flex justify-center pt-4 pointer-events-none animate-in slide-in-from-top-full duration-500">
+          <Button
+            onClick={handlePreviewBook}
+            disabled={isGeneratingPreview}
+            className="pointer-events-auto h-12 px-8 text-sm font-black bg-primary hover:bg-primary/90 text-white rounded-full shadow-2xl shadow-primary/40 flex items-center gap-2 border-none transform transition-all hover:scale-105 active:scale-95"
+          >
+            {isGeneratingPreview ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Eye className="w-4 h-4" />
+            )}
+            {isGeneratingPreview ? "Generating..." : "Preview book"}
+          </Button>
+        </div>
+      )}
+
       <div className="flex-1 max-w-5xl mx-auto w-full px-4 py-6 md:py-12">
         <div className="bg-white rounded-2xl shadow-sm p-4 md:p-8 lg:p-12">
           {/* Page selector */}
@@ -396,7 +414,7 @@ export default function ImageUploadPage() {
                     ) : (
                       <Eye className="w-4 h-4" />
                     )}
-                    {isGeneratingPreview ? "Generating..." : "Preview Book"}
+                    {isGeneratingPreview ? "Generating..." : "Preview page"}
                   </Button>
 
                   <div
@@ -572,8 +590,8 @@ export default function ImageUploadPage() {
                       <Wand2 className="w-6 h-6 mr-3" />
                     )}
                     {isConverting
-                      ? "Convert Your photo!"
-                      : "CONVERT TO LINE ART"}
+                      ? "Photo-to-sketch in process!"
+                      : "Photo-to-sketch in Line Art"}
                   </Button>
                 </div>
               )}
@@ -726,13 +744,17 @@ export default function ImageUploadPage() {
               </Button>
             </div>
 
-            {/* Next Step Button */}
-            <Button
-              onClick={() => setStep("finalize")}
-              className="h-14 md:h-16 w-full md:w-auto px-8 md:px-12 text-lg md:text-xl font-black bg-[#ff8b36] hover:bg-orange-600 text-white rounded-2xl shadow-xl shadow-orange-500/20 transition-all hover:scale-105 active:scale-95 border-none"
-            >
-              REVIEW BOOK →
-            </Button>
+            {/* Next Step Button - Only on last page */}
+            {currentPage === totalPages ? (
+              <Button
+                onClick={() => setStep("finalize")}
+                className="h-14 md:h-16 w-full md:w-auto px-8 md:px-12 text-lg md:text-xl font-black bg-[#ff8b36] hover:bg-orange-600 text-white rounded-2xl shadow-xl shadow-orange-500/20 transition-all hover:scale-105 active:scale-95 border-none"
+              >
+                REVIEW BOOK →
+              </Button>
+            ) : (
+              <div className="w-full md:w-[220px]" /> // Spacer to keep layout consistent
+            )}
           </div>
         </div>
       </div>

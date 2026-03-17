@@ -32,7 +32,7 @@ const TermsConditions = () => {
         </div>
 
         <h1 className="text-center text-3xl md:text-4xl font-semibold text-gray-600 mb-8">
-          {hasDynamicContent ? terms.title : "Terms & Conditions"}
+          {hasDynamicContent ? terms.title : "Terms of Service"}
         </h1>
 
         {hasDynamicContent ? (
