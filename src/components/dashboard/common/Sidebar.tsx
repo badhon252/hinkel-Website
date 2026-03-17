@@ -78,7 +78,7 @@ const navigation = [
         icon: RotateCcw,
       },
       {
-        name: "Terms & Conditions",
+        name: "Terms of Service",
         href: "/dashboard/terms-conditions",
         icon: FileSignature,
       },

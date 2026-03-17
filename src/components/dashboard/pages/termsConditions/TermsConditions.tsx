@@ -89,12 +89,10 @@ const TermsConditions = () => {
         { id: existingTerms._id, data },
         {
           onSuccess: () => {
-            toast.success("Terms & Conditions updated successfully");
+            toast.success("Terms of Service updated successfully");
           },
           onError: (error: Error) => {
-            toast.error(
-              "Failed to update Terms & Conditions: " + error.message,
-            );
+            toast.error("Failed to update Terms of Service: " + error.message);
           },
         },
       );
@@ -102,10 +100,10 @@ const TermsConditions = () => {
       // Create new terms
       createTerms(data, {
         onSuccess: () => {
-          toast.success("Terms & Conditions created successfully");
+          toast.success("Terms of Service created successfully");
         },
         onError: (error: Error) => {
-          toast.error("Failed to create Terms & Conditions: " + error.message);
+          toast.error("Failed to create Terms of Service: " + error.message);
         },
       });
     }
@@ -115,13 +113,13 @@ const TermsConditions = () => {
     if (!termsToDelete) return;
     deleteTerms(termsToDelete, {
       onSuccess: () => {
-        toast.success("Terms & Conditions deleted successfully");
+        toast.success("Terms of Service deleted successfully");
         form.reset({ title: "", content: "" });
         setDeleteDialogOpen(false);
         setTermsToDelete(null);
       },
       onError: (error: Error) => {
-        toast.error("Failed to delete Terms & Conditions: " + error.message);
+        toast.error("Failed to delete Terms of Service: " + error.message);
         setDeleteDialogOpen(false);
       },
     });
@@ -149,7 +147,7 @@ const TermsConditions = () => {
         <div>
           <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
             <FileSignature className="h-8 w-8 text-primary" />
-            Terms & Conditions
+            Terms of Service
           </h1>
           <p className="text-slate-500 mt-1">
             {isEditMode
@@ -234,7 +232,7 @@ const TermsConditions = () => {
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="e.g. Terms & Conditions"
+                        placeholder="e.g. Terms of Service"
                         className="h-11"
                         {...field}
                       />
@@ -294,7 +292,7 @@ const TermsConditions = () => {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-red-600">
               <AlertTriangle className="h-5 w-5" />
-              Delete Terms & Conditions
+              Delete Terms of Service
             </DialogTitle>
             <DialogDescription>
               Are you sure you want to delete these terms and conditions? This

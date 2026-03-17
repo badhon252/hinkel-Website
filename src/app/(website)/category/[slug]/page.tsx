@@ -1,77 +1,71 @@
-"use client";
+import type { Metadata } from "next";
+import CategoryPageClient from "./CategoryPageClient";
 
-import { use, Fragment } from "react";
-import { Hero } from "@/features/category-page/components/hero";
-import { GallerySection } from "@/features/category-page/components/gallery-section";
-import { useContent } from "@/features/category-page/hooks/use-content";
-import { useGetCmsByType } from "@/features/dashboard/hooks/useCms";
-import RichTextRenderer from "@/components/shared/RichTextRenderer";
-import type { CategoryContent } from "@/features/category-page/api/category.api";
+type CategoryMetadata = {
+  title: string;
+  description: string;
+};
 
-export default function CategoryPage({
+const categoryMeta: Record<string, CategoryMetadata> = {
+  kids: {
+    title: "Custom Kids Coloring Book from Photos",
+    description:
+      "Create a personalized kids coloring book using your own family photos. Bold line art style, printed or digital. A one-of-a-kind gift kids will love.",
+  },
+  pets: {
+    title: "Custom Pet Portrait Sketchbook from Photos",
+    description:
+      "Turn your pet's photo into a beautiful, detailed sketch book. A unique gift for pet lovers — printed or as a PDF download.",
+  },
+  anime: {
+    title: "Custom Anime Coloring Book from Your Photos",
+    description:
+      "Convert your photos into stunning anime-style illustrations and build your own custom coloring book. Perfect gift for anime fans.",
+  },
+  dementia: {
+    title: "Personalized Memory Care Coloring Book from Photos",
+    description:
+      "Create a custom, dementia-friendly coloring book using real family photos. Designed for memory care patients — familiar, soothing, and deeply personal.",
+  },
+  seniors: {
+    title: "Personalized Memory Care Coloring Book for Seniors",
+    description:
+      "Create a custom coloring book for seniors using real family photos. Designed for reminiscence therapy and meaningful engagement.",
+  },
+};
+
+const defaultMeta: CategoryMetadata = {
+  title: "Custom Coloring Book Collection",
+  description:
+    "Explore our unique coloring book collection. Upload your photos and convert them into personalized, printable coloring pages.",
+};
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const decoded = decodeURIComponent(slug).toLowerCase();
+  const meta = categoryMeta[decoded] || defaultMeta;
+
+  return {
+    title: meta.title,
+    description: meta.description,
+    openGraph: {
+      title: `${meta.title} | sktchLABS`,
+      description: meta.description,
+    },
+  };
+}
+
+export default async function CategoryPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug: rawSlug } = use(params);
+  const { slug: rawSlug } = await params;
   const slug = decodeURIComponent(rawSlug);
 
-  const { data, isLoading, error } = useContent({ type: slug });
-  const { data: cmsData } = useGetCmsByType(slug);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen">
-        <Hero type={slug} />
-        <div className="flex items-center justify-center py-20">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-red-500">
-          Failed to load content. Please try again later.
-        </p>
-      </div>
-    );
-  }
-
-  const contents = data?.data || [];
-  const heroContent = contents[0];
-  const cmsContent = cmsData?.data?.data?.contents?.[0];
-
-  return (
-    <div className="min-h-[90vh]">
-      <Hero type={slug} heroContent={heroContent} />
-
-      {cmsContent?.richText && (
-        <section className="py-12 md:py-20 bg-secondary">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <RichTextRenderer content={cmsContent.richText} />
-          </div>
-        </section>
-      )}
-
-      {/* {contents.map((item: CategoryContent, index: number) => (
-        <Fragment key={item._id || index}>
-          {item.gallery && item.gallery.length > 0 && (
-            <GallerySection
-              images={item.gallery as string[]}
-              title={item.title}
-            />
-          )}
-        </Fragment>
-      ))} */}
-
-      {contents.length === 0 && !cmsContent && (
-        <div className="py-20 text-center">
-          <p className="text-gray-500">No content found for this category.</p>
-        </div>
-      )}
-    </div>
-  );
+  return <CategoryPageClient slug={slug} />;
 }

@@ -2,9 +2,9 @@ import Pricing from "@/components/website/PageSections/PricingPage/Pricing";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Pricing - sktch LABS",
+  title: "Pricing | Custom Coloring Book Plans",
   description:
-    "View our simple and transparent pricing plans for creating your AI-powered coloring books.",
+    "View our simple and transparent pricing plans for creating personalized coloring books from your photos. Kids, Pets, Anime & Memory Care collections.",
 };
 
 const page = () => {

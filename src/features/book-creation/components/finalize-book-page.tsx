@@ -14,6 +14,7 @@ import {
   CheckCircle,
   Plus,
   PrinterCheck,
+  Pencil,
 } from "lucide-react";
 import { toast } from "sonner";
 import AddPagesModal from "./AddPagesModal";
@@ -145,19 +146,28 @@ export default function FinalizeBookPage() {
               <PrinterCheck className="inline-block mr-2 size-4" /> Optimized
               for professional print-on-demand services like Lulu.
             </span>
-            <Button
-              onClick={handlePreview}
-              disabled={isGenerating}
-              variant="outline"
-              className="group border-primary/20 text-primary hover:bg-primary/5 rounded-xl h-12 px-6 gap-2 w-full md:w-auto"
-            >
-              {isGenerating ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Eye className="w-4 h-4 transition-transform group-hover:scale-110" />
-              )}
-              {isGenerating ? "GENERATING..." : "PREVIEW PDF"}
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+              <Button
+                onClick={handlePreview}
+                disabled={isGenerating}
+                className="group bg-primary hover:bg-orange-600 animate-pulse  text-white font-bold rounded-xl h-12 px-6 gap-2 w-full sm:w-auto shadow-lg shadow-primary/20 transition-all hover:scale-105"
+              >
+                {isGenerating ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Eye className="w-4 h-4 transition-transform group-hover:scale-110" />
+                )}
+                {isGenerating ? "GENERATING..." : "PREVIEW PDF"}
+              </Button>
+              <Button
+                onClick={handleReturnToCreation}
+                variant="outline"
+                className="rounded-xl h-12 px-6 gap-2 w-full sm:w-auto border-primary/20 text-primary hover:bg-primary/5"
+              >
+                <Pencil className="w-4 h-4" />
+                EDIT BOOK
+              </Button>
+            </div>
           </div>
 
           <div className="space-y-8 mb-12">

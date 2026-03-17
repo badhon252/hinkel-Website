@@ -38,8 +38,27 @@ export function FAQ() {
   const defaultOpenItem = activeItems.find((item) => item.defaultOpen);
   const defaultValue = defaultOpenItem ? defaultOpenItem._id : undefined;
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: activeItems.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer.sanitized,
+      },
+    })),
+  };
+
   return (
     <section className="py-24 px-6 bg-secondary">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(faqSchema),
+        }}
+      />
       <div className="mx-auto max-w-4xl">
         <div className="text-center space-y-4 mb-16">
           <HeaderTitle title={faqData.title} />
