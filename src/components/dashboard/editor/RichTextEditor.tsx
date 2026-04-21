@@ -49,6 +49,7 @@ import {
   Type,
   Maximize2,
   ListRestart,
+  Underline as UnderlineIcon,
 } from "lucide-react";
 
 // Custom FontSize Extension is now imported from @/components/shared/editor-extensions
@@ -579,6 +580,19 @@ const RichTextEditor = ({
           }
         >
           <Bold size={16} />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => editor.chain().focus().toggleUnderline().run()}
+          className={
+            editor.isActive("underline")
+              ? "bg-white/10 text-[#ff7a00]"
+              : "text-white/60"
+          }
+        >
+          <UnderlineIcon size={16} />
         </Button>
         <Button
           type="button"
