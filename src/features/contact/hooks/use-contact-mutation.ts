@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { submitContactForm, ContactFormData } from "../api/contact.api";
 import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 export const useContactMutation = () => {
   return useMutation({
@@ -8,9 +9,8 @@ export const useContactMutation = () => {
     onSuccess: () => {
       toast.success("Your message has been sent successfully!");
     },
-    onError: (error) => {
-      toast.error("Failed to send message.");
-      console.error(error);
+    onError: (error: AxiosError<{ message: string }>) => {
+      toast.error(error?.response?.data?.message || "Failed to send message");
     },
   });
 };

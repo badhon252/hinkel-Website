@@ -63,7 +63,7 @@ export default function StylesPage() {
   return (
     <div className="min-h-screen bg-[#fafafa] selection:bg-primary/20">
       {/* Premium Hero Section */}
-      <section className="relative pt-32 pb-24 overflow-hidden">
+      <section className="relative pt-8 pb-24 overflow-hidden">
         {/* Abstract Background Elements */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
           <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[80%] bg-primary/5 rounded-full blur-[140px]" />
