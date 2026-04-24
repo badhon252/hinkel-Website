@@ -435,7 +435,7 @@ export default function ImageUploadPage() {
                   >
                     {isAdmin && <span>👑</span>}
                     {isAdmin
-                      ? "Unlimited Sketches Created"
+                      ? "Unlimited"
                       : `${generationsUsed}/${maxConversions} Sketches Created`}
                   </div>
                 </div>

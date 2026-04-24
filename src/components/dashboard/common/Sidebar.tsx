@@ -123,7 +123,7 @@ export function SidebarContent({
       <div className="flex items-center py-8 justify-center px-6 shrink-0">
         <Link href="/dashboard" className="flex items-center ">
           <Image
-            src="/images/logo.png"
+            src="/images/new-logo.png"
             alt="Company Logo"
             width={160}
             height={160}

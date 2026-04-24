@@ -11,8 +11,21 @@ import type { BookStore } from "@/features/book-creation/types";
 export default function SuccessPage() {
   const resetBook = useBookStore((state: BookStore) => state.resetBook);
   const state = useBookStore();
-  const { pageCount } = state;
+  const { pageCount, outputFormat } = state;
   // const [isGenerating, setIsGenerating] = useState(false);
+
+  const deliveryMessage = () => {
+    switch (outputFormat) {
+      case "pdf":
+        return "Your PDF coloring book has been created and will be delivered to your email shortly.";
+      case "printed":
+        return "Your print order has been confirmed. You will receive an email confirmation shortly.";
+      case "pdf&printed":
+        return "Your coloring book is ready! You will receive a confirmation email for your print order with the PDF file attached.";
+      default:
+        return "Your coloring book is ready! You should receive an email confirmation shortly.";
+    }
+  };
 
   const handleCreateAnother = () => {
     resetBook();
@@ -56,7 +69,9 @@ export default function SuccessPage() {
         </h1>
 
         <p className="text-xl text-muted-foreground mb-12">
-          Your coloring book is ready to download!
+          {outputFormat === "printed"
+            ? "Order Confirmed!"
+            : "Your coloring book is ready!"}
         </p>
 
         <div className="bg-white rounded-2xl p-8 md:p-12 shadow-sm border border-border mb-8">
@@ -70,18 +85,22 @@ export default function SuccessPage() {
             <div className="p-6 bg-pink-50 rounded-lg">
               <div className="text-2xl mb-2">✓</div>
               <p className="text-sm font-medium text-foreground">
-                <span className="text-blue-600 font-bold">Ready</span>
+                <span className="text-blue-600 font-bold capitalize">
+                  {outputFormat === "pdf"
+                    ? "Digital PDF"
+                    : outputFormat === "printed"
+                      ? "Print Order"
+                      : "PDF & Print"}
+                </span>
               </p>
             </div>
           </div>
 
           <div className="border-t border-border pt-6">
             <p className="text-foreground font-medium mb-2">
-              Your book has been created successfully wait for the Confirmation
+              Great job creating your book! We hope you enjoy it.
             </p>
-            <p className="text-sm text-muted-foreground">
-              You will notify by mail
-            </p>
+            <p className="text-sm text-muted-foreground">{deliveryMessage()}</p>
           </div>
         </div>
 
@@ -101,7 +120,7 @@ export default function SuccessPage() {
 
           <button
             onClick={handleCreateAnother}
-            className="w-full bg-muted hover:bg-primary hover:text-white text-primary cursor-pointer duration-300 font-semibold py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-colors"
+            className="w-full hover:text-primary hover:bg-muted hover:border hover:border-primary bg-primary text-white cursor-pointer duration-300 font-semibold py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-colors"
           >
             <BookOpenText className="w-5 h-5" />
             Create Another Book
