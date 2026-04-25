@@ -201,7 +201,7 @@ const RecentOrdersTable = () => {
                     <div>
                       <button
                         onClick={() => {
-                          setViewerUrl(order.bookThumbnail);
+                          setViewerUrl(order.bookThumbnail ?? null);
                           setViewerTitle(order.title || "Coloring Book");
                         }}
                         className="
@@ -372,7 +372,7 @@ const RecentOrdersTable = () => {
 
               {(selectedOrder.hasBook || selectedOrder.title) && (
                 <div className="flex gap-4 p-4 bg-orange-50/50 rounded-xl border border-orange-100">
-                  <div className="relative h-20 w-16 flex-shrink-0 bg-white rounded-lg overflow-hidden border border-orange-200 flex items-center justify-center text-orange-200">
+                  <div className="relative h-20 w-16 shrink-0 bg-white rounded-lg overflow-hidden border border-orange-200 flex items-center justify-center text-orange-200">
                     {selectedOrder.bookThumbnail ? (
                       <Image
                         src={selectedOrder.bookThumbnail}
@@ -397,7 +397,7 @@ const RecentOrdersTable = () => {
                     {selectedOrder.hasBook && selectedOrder.bookThumbnail && (
                       <button
                         onClick={() => {
-                          setViewerUrl(selectedOrder.bookThumbnail);
+                          setViewerUrl(selectedOrder.bookThumbnail ?? null);
                           setViewerTitle(
                             selectedOrder.title || "Coloring Book",
                           );
