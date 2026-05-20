@@ -27,6 +27,7 @@ import { useSession } from "next-auth/react";
 const ChangePassword = () => {
   const { data: session } = useSession();
   const { loading, error, handleChangePassword } = useChangePassword();
+  const [showOldPassword, setShowOldPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     oldPassword: "",
@@ -127,15 +128,22 @@ const ChangePassword = () => {
                     size={20}
                   />
                   <Input
-                    type="password"
+                    type={showOldPassword ? "text" : "password"}
                     placeholder="••••••••"
                     value={formData.oldPassword}
                     onChange={(e) =>
                       setFormData({ ...formData, oldPassword: e.target.value })
                     }
                     required
-                    className="h-16 pl-12 text-xl font-medium border-2 border-gray-100 bg-gray-50/50 rounded-2xl focus:bg-white focus:ring-4 focus:ring-[#ff7a00]/10 focus:border-[#ff7a00] transition-all"
+                    className="h-16 pl-12 pr-12 text-xl font-medium border-2 border-gray-100 bg-gray-50/50 rounded-2xl focus:bg-white focus:ring-4 focus:ring-[#ff7a00]/10 focus:border-[#ff7a00] transition-all"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowOldPassword(!showOldPassword)}
+                    className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-900"
+                  >
+                    {showOldPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
                 </div>
               </div>
 

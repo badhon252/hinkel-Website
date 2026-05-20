@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { UserPlus, LogIn } from "lucide-react";
+import { buildAuthPath } from "@/features/auth/lib/auth-routes";
 
 interface AuthPromptModalProps {
   isOpen: boolean;
@@ -30,7 +31,11 @@ export function AuthPromptModal({ isOpen, onClose }: AuthPromptModalProps) {
         </DialogHeader>
 
         <div className="flex flex-col gap-4 w-full">
-          <Link href="/register" className="w-full" onClick={onClose}>
+          <Link
+            href={buildAuthPath({ mode: "signup" })}
+            className="w-full"
+            onClick={onClose}
+          >
             <Button className="w-full h-12 text-base font-semibold bg-primary hover:bg-primary/90 text-white shadow-md transition-all gap-2 rounded-xl">
               <UserPlus className="w-5 h-5" />
               Create a Free Account
@@ -48,7 +53,7 @@ export function AuthPromptModal({ isOpen, onClose }: AuthPromptModalProps) {
             </div>
           </div>
 
-          <Link href="/login" className="w-full" onClick={onClose}>
+          <Link href={buildAuthPath()} className="w-full" onClick={onClose}>
             <Button
               variant="outline"
               className="w-full h-12 text-base font-semibold border-2 border-primary text-primary hover:bg-primary/5 transition-all gap-2 rounded-xl"

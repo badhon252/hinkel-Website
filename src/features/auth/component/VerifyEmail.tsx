@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import { Mail, RefreshCcw, ShieldCheck } from "lucide-react";
 import { useEmailVerification } from "../hooks/useEmailVerification";
+import { buildAuthPath } from "../lib/auth-routes";
 
 const OTP_LENGTH = 6;
 const DEFAULT_RESEND_SECONDS = 60;
@@ -125,7 +126,11 @@ const VerifyEmail = () => {
     resetCode();
     window.setTimeout(() => {
       router.push(
-        `/login?email=${encodeURIComponent(email)}&verified=1&callbackUrl=${encodeURIComponent(callbackUrl)}`,
+        buildAuthPath({
+          callbackUrl,
+          email,
+          verified: true,
+        }),
       );
     }, 1200);
   };
@@ -182,7 +187,10 @@ const VerifyEmail = () => {
             <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-700">
               We couldn&apos;t determine which email address to verify. Please
               return to{" "}
-              <Link href="/register" className="font-semibold underline">
+              <Link
+                href={buildAuthPath({ mode: "signup", callbackUrl })}
+                className="font-semibold underline"
+              >
                 account creation
               </Link>{" "}
               and try again.
@@ -276,7 +284,7 @@ const VerifyEmail = () => {
               <p className="text-center text-sm text-gray-500">
                 Need to use a different email?{" "}
                 <Link
-                  href={`/register?callbackUrl=${encodeURIComponent(callbackUrl)}`}
+                  href={buildAuthPath({ mode: "signup", callbackUrl })}
                   className="font-semibold text-primary hover:underline"
                 >
                   Create another account
