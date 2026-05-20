@@ -342,7 +342,7 @@ export default function ImageUploadPage() {
                     onClick={() => setCurrentPage(pageNum)}
                     className={`relative min-w-[64px] h-[64px] rounded-xl border-2 transition-all overflow-hidden flex items-center justify-center group ${
                       currentPage === pageNum
-                        ? "border-primary ring-4 ring-primary/10 shadow-lg scale-105"
+                        ? "border-primary ring-4 ring-primary/10 shadow-lg scale-105 text-white"
                         : pageImg
                           ? "border-gray-200 hover:border-primary/50"
                           : "border-dashed border-gray-300 hover:border-gray-400 bg-gray-50/50"
