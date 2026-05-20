@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Welcome!",
+  title: "Account Access",
   description:
-    "Manage your orders, track shipments, and configure products easily.",
+    "Log in or create your Hinkle account from a single streamlined entry point.",
 };
 
 export default function RootLayout({
@@ -11,9 +11,5 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <div className="h-screen w-screen bg-secondary flex items-center justify-center">
-      {children}
-    </div>
-  );
+  return <div className="min-h-screen bg-secondary">{children}</div>;
 }

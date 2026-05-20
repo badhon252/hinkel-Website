@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { LogIn, UserPlus } from "lucide-react";
+import { buildAuthPath } from "@/features/auth/lib/auth-routes";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -22,17 +23,16 @@ export function AuthModal({ isOpen, onClose, redirectUrl }: AuthModalProps) {
   const router = useRouter();
 
   const handleLogin = () => {
-    const loginPath = redirectUrl
-      ? `/login?callbackUrl=${encodeURIComponent(redirectUrl)}`
-      : "/login";
+    const loginPath = buildAuthPath({ callbackUrl: redirectUrl });
     router.push(loginPath);
     onClose();
   };
 
   const handleSignUp = () => {
-    const signupPath = redirectUrl
-      ? `/register?callbackUrl=${encodeURIComponent(redirectUrl)}`
-      : "/register";
+    const signupPath = buildAuthPath({
+      mode: "signup",
+      callbackUrl: redirectUrl,
+    });
     router.push(signupPath);
     onClose();
   };

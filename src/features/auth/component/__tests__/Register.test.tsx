@@ -1,11 +1,13 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import type { AnchorHTMLAttributes } from "react";
 import Register from "../Register";
 import { useRegister } from "../../hooks/useregister";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useLogin } from "../../hooks/uselogin";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 // Mock the hooks
 jest.mock("../../hooks/useregister");
+jest.mock("../../hooks/uselogin");
 jest.mock("next/image", () => ({
   __esModule: true,
   default: ({ alt }: { alt?: string }) => (
@@ -27,6 +29,7 @@ jest.mock("next/link", () => ({
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
   useSearchParams: jest.fn(),
+  usePathname: jest.fn(),
 }));
 jest.mock("sonner", () => ({
   toast: {
@@ -37,6 +40,7 @@ jest.mock("sonner", () => ({
 describe("Register Component", () => {
   const mockHandleRegister = jest.fn();
   const mockPush = jest.fn();
+  const mockReplace = jest.fn();
   const mockGet = jest.fn();
 
   beforeEach(() => {
@@ -48,24 +52,34 @@ describe("Register Component", () => {
       handleRegister: mockHandleRegister,
     });
 
+    (useLogin as jest.Mock).mockReturnValue({
+      loading: false,
+      error: null,
+      handleLogin: jest.fn(),
+    });
+
     (useRouter as jest.Mock).mockReturnValue({
       push: mockPush,
+      replace: mockReplace,
     });
 
     (useSearchParams as jest.Mock).mockReturnValue({
       get: mockGet,
     });
+
+    (usePathname as jest.Mock).mockReturnValue("/register");
   });
 
   it("renders the register form correctly", () => {
     render(<Register />);
-    expect(screen.getByText("Welcome")).toBeInTheDocument();
+    expect(screen.getByText("Create your account")).toBeInTheDocument();
     expect(screen.getByText("First Name")).toBeInTheDocument();
     expect(screen.getByText("Last Name")).toBeInTheDocument();
     expect(screen.getByLabelText(/email address/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^confirm password$/i)).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /register/i }),
+      screen.getAllByRole("button", { name: /create account/i })[1],
     ).toBeInTheDocument();
   });
 
@@ -78,5 +92,34 @@ describe("Register Component", () => {
 
     render(<Register />);
     expect(screen.getByText("Registration failed")).toBeInTheDocument();
+  });
+
+  it("prevents submission when passwords do not match", () => {
+    render(<Register />);
+
+    fireEvent.change(screen.getByLabelText(/first name/i), {
+      target: { value: "John" },
+    });
+    fireEvent.change(screen.getByLabelText(/last name/i), {
+      target: { value: "Doe" },
+    });
+    fireEvent.change(screen.getByLabelText(/email address/i), {
+      target: { value: "john@example.com" },
+    });
+    fireEvent.change(screen.getByLabelText(/^password$/i), {
+      target: { value: "secret123" },
+    });
+    fireEvent.change(screen.getByLabelText(/^confirm password$/i), {
+      target: { value: "different123" },
+    });
+    fireEvent.click(screen.getByLabelText(/privacy policy/i));
+    fireEvent.click(
+      screen.getAllByRole("button", { name: /create account/i })[1],
+    );
+
+    expect(
+      screen.getByText("Passwords do not match. Please re-enter them."),
+    ).toBeInTheDocument();
+    expect(mockHandleRegister).not.toHaveBeenCalled();
   });
 });

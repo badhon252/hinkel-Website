@@ -35,6 +35,7 @@ import {
 import { cn, toTitleCase } from "@/lib/utils";
 import { useContent } from "@/features/category-page/hooks/use-content";
 import type { CategoryContent } from "@/features/category-page/types";
+import { buildAuthPath } from "@/features/auth/lib/auth-routes";
 
 // Types
 interface MenuItem {
@@ -364,12 +365,12 @@ export default function Navbar() {
         <div className="hidden md:flex items-center space-x-4">
           {status === "unauthenticated" ? (
             <>
-              <Link href="/register">
+              <Link href={buildAuthPath({ mode: "signup" })}>
                 <Button className="border-primary text-white hover:bg-primary/80 px-8 rounded-lg font-semibold transition-all bg-black">
                   Create a Free Account
                 </Button>
               </Link>
-              <Link href="/login">
+              <Link href={buildAuthPath()}>
                 <Button
                   variant="outline"
                   className="border-primary text-primary-foreground hover:bg-primary/10 px-8 rounded-lg font-semibold transition-all"
@@ -459,12 +460,12 @@ export default function Navbar() {
                 ))}
                 {status === "unauthenticated" && (
                   <div className="flex flex-col px-5 pt-6 mt-4 border-t space-y-2">
-                    <Link href="/register">
+                    <Link href={buildAuthPath({ mode: "signup" })}>
                       <Button className="border-primary text-white hover:bg-primary/80 px-8 rounded-lg font-semibold transition-all w-full bg-black">
                         Create a Free Account
                       </Button>
                     </Link>
-                    <Link href="/login">
+                    <Link href={buildAuthPath()}>
                       <Button
                         variant="outline"
                         className="border-primary text-primary-foreground hover:bg-primary/10 px-8 rounded-lg font-semibold transition-all w-full"
