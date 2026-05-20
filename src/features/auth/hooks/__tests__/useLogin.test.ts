@@ -68,7 +68,7 @@ describe("useLogin Hook", () => {
     expect(result.current.error).toBe("Something went wrong");
   });
 
-  it("retries login once for a recently verified email before surfacing OTP flow", async () => {
+  it("retries login for a recently verified email before allowing sign-in", async () => {
     jest.useFakeTimers();
     markEmailAsRecentlyVerified("test@example.com");
 
@@ -96,13 +96,56 @@ describe("useLogin Hook", () => {
         "test@example.com",
         "password",
       );
-      await jest.advanceTimersByTimeAsync(900);
+      await jest.advanceTimersByTimeAsync(800);
       loginResult = await loginPromise;
     });
 
     expect(signIn).toHaveBeenCalledTimes(2);
     expect(loginResult).toEqual({ success: true });
     expect(result.current.error).toBeNull();
+    jest.useRealTimers();
+  });
+
+  it("keeps the user on login instead of sending them back to OTP when verification is still syncing", async () => {
+    jest.useFakeTimers();
+    markEmailAsRecentlyVerified("test@example.com");
+
+    (signIn as jest.Mock).mockResolvedValue({
+      error: JSON.stringify({
+        status: 403,
+        message: "Please verify your email",
+        data: {
+          email: "test@example.com",
+          maskedEmail: "te***@example.com",
+          expiresInMinutes: 15,
+          resendCooldownSeconds: 60,
+          verificationRequired: true,
+        },
+      }),
+    });
+
+    const { result } = renderHook(() => useLogin());
+
+    let loginResult;
+    await act(async () => {
+      const loginPromise = result.current.handleLogin(
+        "test@example.com",
+        "password",
+      );
+      await jest.advanceTimersByTimeAsync(800 + 1500 + 2500);
+      loginResult = await loginPromise;
+    });
+
+    expect(signIn).toHaveBeenCalledTimes(4);
+    expect(loginResult).toEqual({
+      success: false,
+      message:
+        "Your email was verified successfully. We're syncing your account now, so please try signing in again in a few seconds.",
+      verificationPending: true,
+    });
+    expect(result.current.error).toBe(
+      "Your email was verified successfully. We're syncing your account now, so please try signing in again in a few seconds.",
+    );
     jest.useRealTimers();
   });
 

@@ -13,6 +13,7 @@ type LoginActionResult =
       success: false;
       message: string;
       verification?: LoginVerificationRequiredData;
+      verificationPending?: boolean;
     };
 
 const parseAuthError = (error: string) => {
@@ -27,7 +28,7 @@ const parseAuthError = (error: string) => {
   }
 };
 
-const RETRY_DELAY_MS = 900;
+const RETRY_DELAYS_MS = [800, 1500, 2500];
 
 const wait = (durationMs: number) =>
   new Promise((resolve) => window.setTimeout(resolve, durationMs));
@@ -58,9 +59,10 @@ export function useLogin() {
     setLoading(true);
     setError(null);
     try {
+      const normalizedEmail = email.trim().toLowerCase();
       let result = await signIn("credentials", {
         redirect: false,
-        email,
+        email: normalizedEmail,
         password,
       });
 
@@ -68,21 +70,56 @@ export function useLogin() {
         let parsed = parseAuthError(result.error);
 
         if (
-          shouldRetryRecentlyVerifiedLogin(email, parsed?.data || undefined)
+          shouldRetryRecentlyVerifiedLogin(
+            normalizedEmail,
+            parsed?.data || undefined,
+          )
         ) {
-          await wait(RETRY_DELAY_MS);
-          result = await signIn("credentials", {
-            redirect: false,
-            email,
-            password,
-          });
-          parsed = result?.error ? parseAuthError(result.error) : null;
+          for (const delayMs of RETRY_DELAYS_MS) {
+            await wait(delayMs);
+            result = await signIn("credentials", {
+              redirect: false,
+              email: normalizedEmail,
+              password,
+            });
+
+            if (!result?.error) {
+              break;
+            }
+
+            parsed = parseAuthError(result.error);
+
+            if (
+              !shouldRetryRecentlyVerifiedLogin(
+                normalizedEmail,
+                parsed?.data || undefined,
+              )
+            ) {
+              break;
+            }
+          }
         }
       }
 
       if (result?.error) {
         const parsed = parseAuthError(result.error);
         const message = parsed?.message || result.error;
+
+        if (
+          shouldRetryRecentlyVerifiedLogin(
+            normalizedEmail,
+            parsed?.data || undefined,
+          )
+        ) {
+          const retryMessage =
+            "Your email was verified successfully. We're syncing your account now, so please try signing in again in a few seconds.";
+          setError(retryMessage);
+          return {
+            success: false,
+            message: retryMessage,
+            verificationPending: true,
+          } satisfies LoginActionResult;
+        }
 
         setError(message);
 
@@ -100,7 +137,7 @@ export function useLogin() {
         } satisfies LoginActionResult;
       }
 
-      clearRecentEmailVerification(email);
+      clearRecentEmailVerification(normalizedEmail);
       return { success: true } satisfies LoginActionResult;
     } catch {
       setError("Something went wrong");

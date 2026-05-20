@@ -26,18 +26,39 @@ export function useRegister() {
   const [error, setError] = useState<string | null>(null);
 
   const handleRegister = async (
-    name: string,
+    firstName: string,
+    lastName: string,
     email: string,
     password: string,
   ) => {
     setLoading(true);
     setError(null);
     try {
-      const result = await registeruser({ name, email, password });
+      const normalizedFirstName = firstName.trim();
+      const normalizedLastName = lastName.trim();
+      const result = await registeruser({
+        firstName: normalizedFirstName,
+        lastName: normalizedLastName,
+        name: [normalizedFirstName, normalizedLastName]
+          .filter(Boolean)
+          .join(" "),
+        email: email.trim().toLowerCase(),
+        password,
+      });
 
       return result;
     } catch (err: unknown) {
-      setError(getErrorMessage(err) || "An unexpected error occurred");
+      const message = getErrorMessage(err) || "An unexpected error occurred";
+      const normalizedEmail = email.trim().toLowerCase();
+
+      if (/already registered|already exists|duplicate/i.test(message)) {
+        setError(
+          `An account with ${normalizedEmail} already exists. Try logging in instead.`,
+        );
+      } else {
+        setError(message);
+      }
+
       return undefined;
     } finally {
       setLoading(false);

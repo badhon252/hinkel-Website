@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
-import { ArrowRight, LockKeyhole, Sparkles, UserPlus } from "lucide-react";
+import { ArrowRight, LockKeyhole, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { useLogin } from "../hooks/uselogin";
 import { useRegister } from "../hooks/useregister";
@@ -243,9 +243,9 @@ const AuthGateway = ({ initialMode = "login" }: AuthGatewayProps) => {
     event.preventDefault();
     if (!validateSignup()) return;
 
-    const fullName = `${getFriendlyName(signupData.firstName.trim())} ${getFriendlyName(signupData.lastName.trim())}`;
     const response = await handleRegister(
-      fullName,
+      getFriendlyName(signupData.firstName.trim()),
+      getFriendlyName(signupData.lastName.trim()),
       signupData.email.trim(),
       signupData.password,
     );

@@ -30,7 +30,9 @@ export interface VerifyCodeFormData {
 }
 
 export interface RegisterFormData {
-  name: string;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
   email: string;
   password: string;
 }

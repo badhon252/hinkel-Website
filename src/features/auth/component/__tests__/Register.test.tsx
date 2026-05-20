@@ -122,4 +122,35 @@ describe("Register Component", () => {
     ).toBeInTheDocument();
     expect(mockHandleRegister).not.toHaveBeenCalled();
   });
+
+  it("submits first name, last name, email, and password separately", () => {
+    render(<Register />);
+
+    fireEvent.change(screen.getByLabelText(/first name/i), {
+      target: { value: "Jane" },
+    });
+    fireEvent.change(screen.getByLabelText(/last name/i), {
+      target: { value: "Doe" },
+    });
+    fireEvent.change(screen.getByLabelText(/email address/i), {
+      target: { value: "jane@example.com" },
+    });
+    fireEvent.change(screen.getByLabelText(/^password$/i), {
+      target: { value: "secret123" },
+    });
+    fireEvent.change(screen.getByLabelText(/^confirm password$/i), {
+      target: { value: "secret123" },
+    });
+    fireEvent.click(screen.getByLabelText(/privacy policy/i));
+    fireEvent.click(
+      screen.getAllByRole("button", { name: /create account/i })[1],
+    );
+
+    expect(mockHandleRegister).toHaveBeenCalledWith(
+      "Jane",
+      "Doe",
+      "jane@example.com",
+      "secret123",
+    );
+  });
 });
