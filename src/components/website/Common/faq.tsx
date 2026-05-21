@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Accordion,
   AccordionContent,
@@ -9,32 +7,20 @@ import {
 import { Button } from "@/components/ui/button";
 import HeaderTitle from "./head-title";
 import Link from "next/link";
-import { usePublicFaq } from "@/features/website-content/hooks/use-faq-content";
-import { Loader2 } from "lucide-react";
+import type { PublicFaqData } from "@/features/website-content/api/website-content.api";
+import { getActiveFaqItems } from "@/lib/public-api";
 
-export function FAQ() {
-  const { data, isLoading, isError } = usePublicFaq();
+interface FAQProps {
+  faqData?: PublicFaqData | null;
+}
 
-  if (isLoading) {
-    return (
-      <section className="py-24 px-6 bg-secondary">
-        <div className="mx-auto max-w-4xl flex justify-center items-center min-h-[400px]">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-      </section>
-    );
-  }
-
-  if (isError || !data?.data) {
+export function FAQ({ faqData }: FAQProps) {
+  if (!faqData) {
     return null;
   }
 
-  const faqData = data.data;
-  const activeItems = faqData.items
-    .filter((item) => item.isActive)
-    .sort((a, b) => a.order - b.order);
+  const activeItems = getActiveFaqItems(faqData);
 
-  // Find the default open item
   const defaultOpenItem = activeItems.find((item) => item.defaultOpen);
   const defaultValue = defaultOpenItem ? defaultOpenItem._id : undefined;
 

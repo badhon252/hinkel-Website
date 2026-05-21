@@ -1,12 +1,11 @@
-"use client";
-
 import React from "react";
-import { usePublicPrivacy } from "@/features/website-content/hooks/use-privacy-content";
-import { Loader2 } from "lucide-react";
 
-const PrivacyPolicy = () => {
-  const { data: privacyData, isLoading } = usePublicPrivacy();
+interface PrivacyPolicyProps {
+  title?: string;
+  content?: string;
+}
 
+const PrivacyPolicy = ({ title, content }: PrivacyPolicyProps) => {
   const sections = [
     {
       title: "1. Information We Collect",
@@ -79,18 +78,7 @@ const PrivacyPolicy = () => {
     },
   ];
 
-  if (isLoading) {
-    return (
-      <div className="flex h-[50vh] items-center justify-center bg-secondary">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  // If there's an error or no data, we can either show an error or fall back to static content.
-  // Given the requirement to integrate the API, we should try to show the dynamic content.
-  // If the dynamic content is available, show it. Otherwise, show static as fallback.
-  const hasDynamicContent = privacyData?.data && privacyData.data.content;
+  const hasDynamicContent = Boolean(content);
 
   return (
     <section className="min-h-screen bg-secondary flex justify-center px-6 py-16">
@@ -102,15 +90,13 @@ const PrivacyPolicy = () => {
         </div> */}
 
         <h1 className="text-center text-3xl md:text-4xl font-semibold text-gray-600 mb-8">
-          {hasDynamicContent
-            ? privacyData.data.title
-            : "Your Privacy Matters to Us"}
+          {hasDynamicContent ? title : "Your Privacy Matters to Us"}
         </h1>
 
         {hasDynamicContent ? (
           <div
             className="content-prose prose prose-lg max-w-none text-gray-700 leading-relaxed mb-12"
-            dangerouslySetInnerHTML={{ __html: privacyData.data.content }}
+            dangerouslySetInnerHTML={{ __html: content ?? "" }}
           />
         ) : (
           <>

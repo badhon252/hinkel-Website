@@ -10,10 +10,10 @@ import {
   MoveRight,
   MoveLeft,
 } from "lucide-react";
-import { useContent } from "@/features/category-page/hooks/use-content";
-import { useCategoryHeader } from "@/features/category-page/hooks/use-categoryheader";
-import CategoryGridSkeleton from "./category-grid.skeleton";
-import type { CategoryContent } from "@/features/category-page/types";
+import type {
+  CategoryContent,
+  CategoryHeader,
+} from "@/features/category-page/types";
 import HeaderTitle from "@/components/website/Common/head-title";
 import SubtitleCategory from "@/components/website/Common/SubtitleCategory";
 import { cn, toTitleCase } from "@/lib/utils";
@@ -30,7 +30,6 @@ interface ScrollButtonProps {
 }
 
 // Constants
-const CONTENT_LIMIT = 10;
 const AUTO_SCROLL_INTERVAL = 4000;
 const SCROLL_CHECK_DELAY = 100;
 const SCROLL_AMOUNT_RATIO = 0.75;
@@ -147,61 +146,31 @@ const ScrollButton = memo(({ direction, onClick }: ScrollButtonProps) => (
 
 ScrollButton.displayName = "ScrollButton";
 
-const ErrorState = memo(() => (
-  <section className="py-24 px-6 bg-secondary flex justify-center items-center">
-    <div className="text-center space-y-3 max-w-md">
-      <div className="w-16 h-16 mx-auto bg-red-100 rounded-full flex items-center justify-center mb-4">
-        <svg
-          className="w-8 h-8 text-red-500"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-          />
-        </svg>
-      </div>
-      <p className="text-red-600 font-semibold text-lg">
-        Failed to load categories
-      </p>
-      <p className="text-gray-500 text-sm">
-        We&apos;re having trouble loading the content. Please try again later.
-      </p>
-    </div>
-  </section>
-));
-
-ErrorState.displayName = "ErrorState";
-
 // Main Component
-export function CategoryGrid() {
-  const {
-    data: contentData,
-    isLoading,
-    error,
-  } = useContent({
-    limit: CONTENT_LIMIT,
-  });
-  const { data: headerData } = useCategoryHeader();
+interface CategoryGridProps {
+  categories?: CategoryContent[];
+  headerContent?: CategoryHeader;
+}
+
+export function CategoryGrid({
+  categories: initialCategories,
+  headerContent: initialHeaderContent,
+}: CategoryGridProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [showArrows, setShowArrows] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const categories = useMemo(
-    () => filterCategories(contentData?.data || []),
-    [contentData?.data],
+    () => filterCategories(initialCategories || []),
+    [initialCategories],
   );
 
   const headerContent = useMemo(
     () => ({
-      title: headerData?.data?.data?.title || DEFAULT_HEADER.title,
-      subtitle: headerData?.data?.data?.subtitle || DEFAULT_HEADER.subtitle,
+      title: initialHeaderContent?.title || DEFAULT_HEADER.title,
+      subtitle: initialHeaderContent?.subtitle || DEFAULT_HEADER.subtitle,
     }),
-    [headerData],
+    [initialHeaderContent],
   );
 
   const scroll = useCallback((direction: "left" | "right") => {
@@ -229,16 +198,14 @@ export function CategoryGrid() {
       setShowArrows(checkIfScrollNeeded(containerRef.current));
     };
 
-    if (!isLoading) {
-      const timeoutId = setTimeout(checkScroll, SCROLL_CHECK_DELAY);
-      window.addEventListener("resize", checkScroll);
+    const timeoutId = setTimeout(checkScroll, SCROLL_CHECK_DELAY);
+    window.addEventListener("resize", checkScroll);
 
-      return () => {
-        clearTimeout(timeoutId);
-        window.removeEventListener("resize", checkScroll);
-      };
-    }
-  }, [isLoading, categories.length]);
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener("resize", checkScroll);
+    };
+  }, [categories.length]);
 
   // Auto-scroll functionality
   useEffect(() => {
@@ -260,14 +227,6 @@ export function CategoryGrid() {
 
     return () => clearInterval(interval);
   }, [showArrows, isHovered, scroll]);
-
-  if (isLoading) {
-    return <CategoryGridSkeleton />;
-  }
-
-  if (error) {
-    return <ErrorState />;
-  }
 
   if (categories.length === 0) {
     return null;

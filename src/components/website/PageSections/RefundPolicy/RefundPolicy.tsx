@@ -1,26 +1,13 @@
 // src/components/website/PageSections/RefundPolicy/RefundPolicy.tsx
-"use client";
-
 import React from "react";
-import { usePublicReturnPolicy } from "@/features/website-content/hooks/use-return-policy-content";
-import { Loader2 } from "lucide-react";
+import type { ReturnPolicy } from "@/features/dashboard/types/return-policy.types";
 
-const RefundPolicy = () => {
-  const { data: policyData, isLoading } = usePublicReturnPolicy();
+interface RefundPolicyProps {
+  policy?: ReturnPolicy | null;
+}
 
-  if (isLoading) {
-    return (
-      <div className="flex h-[50vh] items-center justify-center bg-secondary">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  // Get the first policy from the array (only one should exist)
-  const policy =
-    policyData?.data && policyData.data.length > 0 ? policyData.data[0] : null;
-
-  const hasDynamicContent = policy && policy.content;
+const RefundPolicy = ({ policy }: RefundPolicyProps) => {
+  const hasDynamicContent = Boolean(policy?.content);
 
   return (
     <section className="min-h-screen bg-secondary flex justify-center px-6 py-16">
@@ -32,13 +19,13 @@ const RefundPolicy = () => {
         </div> */}
 
         <h1 className="text-center text-3xl md:text-4xl font-semibold text-gray-600 mb-8">
-          {hasDynamicContent ? policy.title : "Return & Refund Policy"}
+          {hasDynamicContent ? policy?.title : "Return & Refund Policy"}
         </h1>
 
         {hasDynamicContent ? (
           <div
             className="content-prose prose prose-lg max-w-none text-gray-700 leading-relaxed mb-12"
-            dangerouslySetInnerHTML={{ __html: policy.content }}
+            dangerouslySetInnerHTML={{ __html: policy?.content ?? "" }}
           />
         ) : (
           <div className="text-center py-12">

@@ -33,7 +33,6 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { cn, toTitleCase } from "@/lib/utils";
-import { useContent } from "@/features/category-page/hooks/use-content";
 import type { CategoryContent } from "@/features/category-page/types";
 import { buildAuthPath } from "@/features/auth/lib/auth-routes";
 
@@ -72,8 +71,6 @@ const MENU_ITEMS: MenuItem[] = [
 ];
 
 const DROPDOWN_DELAY = 150;
-const CONTENT_LIMIT = 12;
-
 // Utility Functions
 const isActiveRoute = (pathname: string, href: string): boolean => {
   return href === "/" ? pathname === href : pathname.startsWith(href);
@@ -253,23 +250,18 @@ const Logo = memo(() => (
 
 Logo.displayName = "Logo";
 
-// Main Component
-export default function Navbar() {
+export default function Navbar({
+  categories,
+}: {
+  categories: CategoryContent[];
+}) {
   const [open, setOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [mobileStylesOpen, setMobileStylesOpen] = useState(false);
   const { data: session, status } = useSession();
   const pathname = usePathname();
-  const { data: contentData } = useContent({ limit: CONTENT_LIMIT });
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  const categories =
-    contentData?.data
-      ?.filter((c: CategoryContent) => c.type?.toLowerCase() !== "home")
-      .sort((a: CategoryContent, b: CategoryContent) =>
-        (a.type || "").localeCompare(b.type || ""),
-      ) || [];
 
   const isActive = useCallback(
     (href: string) => isActiveRoute(pathname, href),
@@ -402,7 +394,7 @@ export default function Navbar() {
               <nav className="flex flex-col space-y-2 mt-8">
                 {MENU_ITEMS.map((item) => (
                   <div key={item.href}>
-                    {item.label === "Styles" ? (
+                    {item.label === "Collections" ? (
                       <Collapsible
                         open={mobileStylesOpen}
                         onOpenChange={setMobileStylesOpen}

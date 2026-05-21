@@ -1,26 +1,13 @@
 // src/components/website/PageSections/TermsConditions/TermsConditions.tsx
-"use client";
-
 import React from "react";
-import { useTermCondition } from "@/features/dashboard/hooks/use-terms-conditions";
-import { Loader2 } from "lucide-react";
+import type { TermCondition } from "@/features/dashboard/types/terms-conditions.types";
 
-const TermsConditions = () => {
-  const { data: termsData, isLoading } = useTermCondition();
+interface TermsConditionsProps {
+  terms?: TermCondition | null;
+}
 
-  if (isLoading) {
-    return (
-      <div className="flex h-[50vh] items-center justify-center bg-secondary">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  // Get the first item from the array
-  const terms =
-    termsData?.data && termsData.data.length > 0 ? termsData.data[0] : null;
-
-  const hasDynamicContent = terms && terms.content;
+const TermsConditions = ({ terms }: TermsConditionsProps) => {
+  const hasDynamicContent = Boolean(terms?.content);
 
   return (
     <section className="min-h-screen bg-secondary flex justify-center px-6 py-16">
@@ -32,13 +19,13 @@ const TermsConditions = () => {
         </div>
 
         <h1 className="text-center text-3xl md:text-4xl font-semibold text-gray-600 mb-8">
-          {hasDynamicContent ? terms.title : "Terms of Service"}
+          {hasDynamicContent ? terms?.title : "Terms of Service"}
         </h1>
 
         {hasDynamicContent ? (
           <div
             className="content-prose prose prose-lg max-w-none text-gray-700 leading-relaxed mb-12"
-            dangerouslySetInnerHTML={{ __html: terms.content }}
+            dangerouslySetInnerHTML={{ __html: terms?.content ?? "" }}
           />
         ) : (
           <div className="text-center py-12">

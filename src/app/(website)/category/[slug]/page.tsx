@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import CategoryPageClient from "./CategoryPageClient";
+import { getPublicCmsByType, getPublicContent } from "@/lib/public-api";
 
 type CategoryMetadata = {
   title: string;
@@ -52,7 +53,11 @@ export async function generateMetadata({
   return {
     title: meta.title,
     description: meta.description,
+    alternates: {
+      canonical: `/category/${encodeURIComponent(decoded)}`,
+    },
     openGraph: {
+      url: `/category/${encodeURIComponent(decoded)}`,
       title: `${meta.title} | sktchLABS`,
       description: meta.description,
     },
@@ -66,6 +71,18 @@ export default async function CategoryPage({
 }) {
   const { slug: rawSlug } = await params;
   const slug = decodeURIComponent(rawSlug);
+  const [contentData, cmsData] = await Promise.all([
+    getPublicContent({ type: slug }),
+    getPublicCmsByType(slug),
+  ]);
+  const contents = contentData.data || [];
+  const cmsContent = cmsData.data?.data?.contents?.[0];
 
-  return <CategoryPageClient slug={slug} />;
+  return (
+    <CategoryPageClient
+      slug={slug}
+      contents={contents}
+      cmsContent={cmsContent}
+    />
+  );
 }

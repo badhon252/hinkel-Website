@@ -5,6 +5,15 @@ export const metadata: Metadata = {
   title: "Contact Us",
   description:
     "Get in touch with the sktchLABS team. Questions about creating personalized coloring books from your photos? We're here to help.",
+  alternates: {
+    canonical: "/contact-us",
+  },
+  openGraph: {
+    url: "/contact-us",
+    title: "Contact Us | sktchLABS",
+    description:
+      "Get in touch with the sktchLABS team. Questions about creating personalized coloring books from your photos? We're here to help.",
+  },
 };
 
 export default function page() {

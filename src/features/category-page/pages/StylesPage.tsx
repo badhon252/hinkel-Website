@@ -5,13 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, Variants } from "framer-motion";
 import { ArrowRight, Stars } from "lucide-react";
-import { useContent } from "@/features/category-page/hooks/use-content";
-import { useStyles } from "@/features/dashboard/hooks/useStyle";
 import { CategoryContent } from "@/features/category-page/types";
+import { StyleConfig } from "@/features/dashboard/types/style.types";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import RichTextRenderer from "@/components/shared/RichTextRenderer";
+import PlainTextContent from "@/components/shared/PlainTextContent";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -38,21 +37,23 @@ const itemVariants: Variants = {
   },
 };
 
-export default function StylesPage() {
-  const { data: contentData, isLoading: isContentLoading } = useContent({
-    limit: 100, // Fetch all images
-  });
-  const { data: styleData, isLoading: isStyleLoading } = useStyles();
+interface StylesPageProps {
+  categories: CategoryContent[];
+  style?: StyleConfig;
+}
 
-  const categories = contentData?.data || [];
-  const style = styleData?.data?.[0] || {
-    title: "Unlock Your Creative Vision",
-    subtitle:
-      "Explore our curated collection of sketch styles. Each one is designed to transform your photos into a unique, printable coloring book experience.",
-    badgeText: "Curated Collection",
-  };
+const DEFAULT_STYLE = {
+  title: "Unlock Your Creative Vision",
+  subtitle:
+    "Explore our curated collection of sketch styles. Each one is designed to transform your photos into a unique, printable coloring book experience.",
+  badgeText: "Curated Collection",
+};
 
-  if (isContentLoading || isStyleLoading) {
+export default function StylesPage({
+  categories,
+  style = DEFAULT_STYLE,
+}: StylesPageProps) {
+  if (categories.length === 0) {
     return <StylesSkeleton />;
   }
 
@@ -290,7 +291,7 @@ function StyleCard({
           <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-6 tracking-tight leading-tight">
             {category.title}
           </h2>
-          <RichTextRenderer
+          <PlainTextContent
             content={
               category.subtitle ||
               "Transform your photos into this distinctive artistic style. Perfect for creating memorable coloring pages with high-quality lines and details."

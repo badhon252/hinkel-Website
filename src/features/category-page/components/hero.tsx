@@ -8,7 +8,7 @@ import { cn, toTitleCase } from "@/lib/utils";
 import { useContent } from "@/features/category-page/hooks/use-content";
 import HeroSkeleton from "@/features/category-page/components/hero.skeleton";
 import { memo, useMemo } from "react";
-import { CategoryContent } from "@/features/category-page/api/category.api";
+import type { CategoryContent } from "@/features/category-page/types";
 import { useRouter } from "next/navigation";
 import RichTextRenderer from "@/components/shared/RichTextRenderer";
 

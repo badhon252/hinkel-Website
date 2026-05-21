@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "../globals.css";
 import Navbar from "@/components/website/Common/Navbar";
 import Footer from "@/components/website/Common/Footer";
+import { getCategoryLinks, getPublicContent } from "@/lib/public-api";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://sktchlabs.com"),
@@ -42,11 +43,14 @@ const organizationSchema = {
   sameAs: [],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const categoryResponse = await getPublicContent({ limit: 100 });
+  const categories = getCategoryLinks(categoryResponse.data);
+
   return (
     <>
       <script
@@ -55,9 +59,9 @@ export default function RootLayout({
           __html: JSON.stringify(organizationSchema),
         }}
       />
-      <Navbar />
+      <Navbar categories={categories} />
       {children}
-      <Footer />
+      <Footer categories={categories} />
     </>
   );
 }

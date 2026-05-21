@@ -14,8 +14,6 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { useCategoryHeader } from "@/features/category-page/hooks/use-categoryheader";
-import { useContent } from "@/features/category-page/hooks/use-content";
 import type { CategoryContent } from "@/features/category-page/types";
 
 // Extract link data to reduce repetition and improve maintainability
@@ -86,9 +84,6 @@ const TrustSeal = ({
   delay?: number;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-
-  const { data: usePostCategoryHeader } = useCategoryHeader();
-  console.log(usePostCategoryHeader, "categoryHeader");
   return (
     <div
       className="relative flex flex-col items-center group"
@@ -144,20 +139,17 @@ const TrustSeal = ({
   );
 };
 
-const Footer = () => {
-  // const currentYear = new Date().getFullYear();
-  const { data: contentData } = useContent({ limit: 12 });
-
+const Footer = ({ categories }: { categories: CategoryContent[] }) => {
   let styleLinks: readonly { label: string; href: string }[] =
     FOOTER_LINKS.styles;
 
-  if (contentData?.data && contentData.data.length > 0) {
-    const dynamicLinks: { label: string; href: string }[] = contentData.data
-      .filter((c: CategoryContent) => c.type?.toLowerCase() !== "home")
-      .map((c: CategoryContent) => ({
+  if (categories.length > 0) {
+    const dynamicLinks: { label: string; href: string }[] = categories.map(
+      (c: CategoryContent) => ({
         label: c.type ? c.type.charAt(0).toUpperCase() + c.type.slice(1) : "",
         href: `/category/${c.type}`,
-      }));
+      }),
+    );
 
     const uniqueLinks = Array.from(
       new Map(dynamicLinks.map((item) => [item.href, item])).values(),
