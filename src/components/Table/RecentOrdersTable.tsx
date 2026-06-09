@@ -75,11 +75,11 @@ const RecentOrdersTable = () => {
   const [rejectionReason, setRejectionReason] = useState("");
 
   const getAdminBookUrl = (order: Order) => {
-    if (order.bookViewUrl) {
-      return `${process.env.NEXT_PUBLIC_API_URL}${order.bookViewUrl}`;
+    if (order.bookThumbnail) {
+      return `${order.bookThumbnail}`;
     }
 
-    return order.bookThumbnail || null;
+    return null;
   };
 
   const openBookInNewTab = (order: Order) => {
@@ -260,8 +260,8 @@ const RecentOrdersTable = () => {
                       title="View Book"
                       aria-label="View book (opens in new tab)"
                     >
-                      <ExternalLink size={16} aria-hidden="true" />
                       <span className="hidden sm:inline">View Book</span>
+                      <ExternalLink size={16} aria-hidden="true" />
                     </Button>
                   )}
                   <Button
