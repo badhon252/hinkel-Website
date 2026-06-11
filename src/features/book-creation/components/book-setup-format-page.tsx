@@ -115,6 +115,7 @@ export default function BookSetupFormatPage() {
         apiType: "print&digital" as const,
         title: "Digital PDF & Printed Book",
         subtitle: "Email + print delivery",
+        popular: true,
       },
     ];
   }, []);
@@ -258,7 +259,7 @@ export default function BookSetupFormatPage() {
                   {option.popular && (
                     <div className="absolute bottom-[-14px] left-1/2 -translate-x-1/2">
                       <div className="bg-[#ff8b36] text-white text-sm font-semibold px-4 py-2 rounded-lg">
-                        Popular
+                        Most Popular
                       </div>
                     </div>
                   )}

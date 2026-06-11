@@ -310,6 +310,7 @@ export const FILE_VALIDATION = {
 export const GENERATION_LIMITS = {
   MAX_PER_PAGE: 3,
   MAX_COVER: 2,
+  MAX_COVER_PAID: 3,
 } as const;
 
 /**
@@ -332,6 +333,7 @@ export interface DeliveryMethodCardProps {
     apiType: DeliveryType;
     title: string;
     subtitle: string;
+    popular?: boolean;
   };
   selectedPages: number;
   selectedFormat: OutputFormat;

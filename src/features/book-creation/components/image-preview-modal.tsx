@@ -37,11 +37,13 @@ export default function ImagePreviewModal({
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
         <DialogHeader>
-          <DialogTitle>Generate Sketch Preview</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="md:text-2xl text-lg font-bold">
+            Cover page photo
+          </DialogTitle>
+          <DialogDescription className="md:text-base font-medium text-sm text-primary">
             {isLoading
               ? "Generating your sketch preview..."
-              : "Would you like to proceed with this image?"}
+              : `Select "Proceed" to see your image converted.`}
           </DialogDescription>
         </DialogHeader>
 

@@ -423,8 +423,8 @@ export default function FinalizeBookPage() {
                 </div>
                 <p className="text-sm text-orange-700">
                   By clicking finalize, you confirm that you have reviewed all
-                  pages and the book metadata. Your order will be processed
-                  immediately.
+                  pages and approve the final version. Your order will be
+                  processed immediately.
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">

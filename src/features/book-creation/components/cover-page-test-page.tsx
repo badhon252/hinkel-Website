@@ -146,11 +146,12 @@ async function processImage(
         toType: string;
         quality: number;
       }) => Promise<Blob>;
-      const blob = (await heic2any({
+      const result = await heic2any({
         blob: file,
         toType: "image/jpeg",
         quality: 0.92,
-      })) as Blob;
+      });
+      const blob = Array.isArray(result) ? result[0] : result;
       objectUrl = URL.createObjectURL(blob);
     } catch {
       throw new Error("Could not decode HEIC. Try converting it to JPG first.");
@@ -690,7 +691,7 @@ export default function CoverPageTestPage() {
   );
   const coverTriesLeft = Math.max(
     0,
-    GENERATION_LIMITS.MAX_COVER - coverGenerationsUsed,
+    GENERATION_LIMITS.MAX_COVER_PAID - coverGenerationsUsed,
   );
 
   // ── File handler ──────────────────────────────────────────────────────
@@ -722,7 +723,7 @@ export default function CoverPageTestPage() {
     if (!pendingImage) return;
     if (!isAdmin && !canGenerateCover()) {
       toast.error(
-        `You have already used your ${GENERATION_LIMITS.MAX_COVER} cover tries. Please choose your favorite cover option to continue.`,
+        `You have already used your ${GENERATION_LIMITS.MAX_COVER_PAID} cover tries. Please choose your favorite cover option to continue.`,
       );
       setIsModalOpen(false);
       return;
@@ -744,7 +745,7 @@ export default function CoverPageTestPage() {
       toast.success(
         isAdmin
           ? "👑 New cover sketch generated."
-          : `Cover option ${newVariants.length} of ${GENERATION_LIMITS.MAX_COVER} is ready. You can compare them and choose your favorite.`,
+          : `Cover option ${newVariants.length} of ${GENERATION_LIMITS.MAX_COVER_PAID} is ready. You can compare them and choose your favorite.`,
       );
       setIsModalOpen(false);
       setPendingImage(null);
@@ -816,9 +817,8 @@ export default function CoverPageTestPage() {
                 Design Your Cover
               </h1>
               <p className="mt-2 text-sm leading-7 text-stone-500 sm:text-base">
-                Upload a photo, compare sketch ideas, and pick the one that
-                feels right. The flow is now structured so core actions stay
-                front and center on mobile and desktop.
+                Upload a photo, compare up to {GENERATION_LIMITS.MAX_COVER_PAID}{" "}
+                converted images, and pick the one you like best.
               </p>
             </div>
           </div>
@@ -838,8 +838,8 @@ export default function CoverPageTestPage() {
                       Cover guidance
                     </p>
                     <h2 className="text-base sm:text-lg font-semibold text-stone-800">
-                      You have {GENERATION_LIMITS.MAX_COVER} chances to find the
-                      perfect cover
+                      You have {GENERATION_LIMITS.MAX_COVER_PAID} chances to
+                      find the perfect cover
                     </h2>
                     <p className="text-sm text-stone-600 leading-relaxed">
                       Each uploaded photo creates one cover option. Compare the
@@ -915,7 +915,7 @@ export default function CoverPageTestPage() {
                       <p className="text-xs text-stone-400 mt-0.5">
                         {isAdmin
                           ? "Unlimited admin access"
-                          : `${coverTriesLeft} of ${GENERATION_LIMITS.MAX_COVER} cover tries left`}{" "}
+                          : `${coverTriesLeft} of ${GENERATION_LIMITS.MAX_COVER_PAID} cover tries left`}{" "}
                         · Any image format · Max {MAX_FILE_MB} MB
                       </p>
                     </div>
@@ -1051,7 +1051,7 @@ export default function CoverPageTestPage() {
                     flex items-center justify-center gap-2 transition-all
                   "
                 >
-                  Continue to Dedication
+                  Next page: Add your book title
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               </div>
@@ -1128,12 +1128,13 @@ export default function CoverPageTestPage() {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-amber-800 mb-1">
-                    About AI Sketches
+                    The sktchLABS Process
                   </p>
                   <p className="text-xs text-amber-700/80 leading-relaxed">
-                    Our AI converts photos into timeless hand-drawn artwork —
-                    giving your memories a warm, artistic feel that lasts a
-                    lifetime.
+                    Our platform transforms your favorite photos into timeless,
+                    hand-drawn artwork. By balancing clean lines with artistic
+                    depth, we give your memories a warm, hand-crafted feel
+                    that&apos;s ready for you to bring to life with color.
                   </p>
                 </div>
               </div>
@@ -1144,10 +1145,30 @@ export default function CoverPageTestPage() {
                   Photo tips
                 </p>
                 {[
-                  "Clear, well-lit shots give the best results",
-                  "Faces and subjects should be clearly visible",
-                  "Portrait orientation fits the book format best",
-                  "Avoid very dark, blurry, or heavily filtered images",
+                  <>
+                    <b>Bright is Best:</b>
+                    {
+                      " Use clear, well-lit photos for the most crisp and detailed outlines."
+                    }
+                  </>,
+                  <>
+                    <b>Focus on the Subject:</b>
+                    {
+                      " Ensure faces and pets are front-and-center and clearly visible."
+                    }
+                  </>,
+                  <>
+                    <b>Think Vertically:</b>
+                    {
+                      " Portrait (vertical) photos naturally fill our book pages most beautifully."
+                    }
+                  </>,
+                  <>
+                    <b>Keep it Natural:</b>
+                    {
+                      " High-quality, unfiltered images produce the cleanest sketches."
+                    }
+                  </>,
                 ].map((tip, i) => (
                   <div
                     key={i}

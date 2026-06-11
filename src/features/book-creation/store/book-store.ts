@@ -148,7 +148,10 @@ export const useBookStore = create<BookStore>()(
         })),
       canGenerateCover: () => {
         const state = get();
-        return state.generationCounts.cover < GENERATION_LIMITS.MAX_COVER;
+        const limit = state.hasPaid
+          ? GENERATION_LIMITS.MAX_COVER_PAID
+          : GENERATION_LIMITS.MAX_COVER;
+        return state.generationCounts.cover < limit;
       },
       canGeneratePage: (pageNum) => {
         const state = get();
@@ -164,7 +167,18 @@ export const useBookStore = create<BookStore>()(
       },
 
       setDedicationText: (dedicationText) => set({ dedicationText }),
-      setHasPaid: (hasPaid) => set({ hasPaid }),
+      setHasPaid: (hasPaid) =>
+        set((state) =>
+          hasPaid
+            ? {
+                hasPaid,
+                generationCounts: {
+                  ...state.generationCounts,
+                  cover: 0,
+                },
+              }
+            : { hasPaid },
+        ),
       setOrderId: (orderId) => set({ orderId }),
       setStripeSessionId: (stripeSessionId) => set({ stripeSessionId }),
       setPendingPageCount: (pendingPageCount) => set({ pendingPageCount }),

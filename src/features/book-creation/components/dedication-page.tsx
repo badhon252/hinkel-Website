@@ -155,7 +155,7 @@ export default function DedicationPage() {
             onClick={handleContinue}
             className="flex items-center gap-3 bg-primary text-white px-8 py-4 rounded-xl font-semibold text-base hover:bg-orange-600 transition-colors h-14"
           >
-            <span>Continue to Pages</span>
+            <span>Create the next page</span>
             <ArrowRight className="w-5 h-5" />
           </button>
         </div>

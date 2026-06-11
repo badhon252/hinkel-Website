@@ -56,6 +56,13 @@ export const DeliveryMethodCard = ({
       {selectedFormat === method.id && (
         <div className="absolute inset-0 rounded-[24px] border-2 border-[#ff8b36] pointer-events-none" />
       )}
+      {method.popular && (
+        <div className="absolute -bottom-3.5 left-1/2 -translate-x-1/2">
+          <div className="bg-[#ff8b36] text-white text-sm font-semibold px-4 py-2 rounded-lg whitespace-nowrap">
+            Most Popular
+          </div>
+        </div>
+      )}
     </button>
   );
 };

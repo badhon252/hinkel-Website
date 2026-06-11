@@ -21,9 +21,9 @@ export default function SuccessPage() {
       case "printed":
         return "Your print order has been confirmed. You will receive an email confirmation shortly.";
       case "pdf&printed":
-        return "Your coloring book is ready! You will receive a confirmation email for your print order with the PDF file attached.";
+        return "You will receive a confirmation email for your print order with the PDF file attached.";
       default:
-        return "Your coloring book is ready! You should receive an email confirmation shortly.";
+        return "You should receive an email confirmation shortly.";
     }
   };
 

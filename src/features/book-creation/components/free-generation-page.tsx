@@ -64,6 +64,10 @@ export default function FreeGenerationPage() {
 
   const freeGenerationsUsed = generationCounts.cover;
   const canGenerate = isAdmin || canGenerateCover();
+  const hasUnusedTries =
+    (canGenerate || isAdmin) &&
+    coverImageVariants.length > 0 &&
+    coverImageVariants.length < GENERATION_LIMITS.MAX_COVER;
   const introSteps = [
     {
       icon: Camera,
@@ -330,7 +334,9 @@ export default function FreeGenerationPage() {
               >
                 <ArrowUpFromLine className="w-5 h-5" />
                 {canGenerate || isAdmin
-                  ? "Upload Photo for a Cover Try"
+                  ? hasUnusedTries
+                    ? "Upload 2nd Photo — 1 Free Try Left"
+                    : "Upload Photo for a Cover Try"
                   : `${GENERATION_LIMITS.MAX_COVER}/${GENERATION_LIMITS.MAX_COVER} Cover Tries Used — Continue Below`}
               </div>
             </label>
@@ -339,7 +345,7 @@ export default function FreeGenerationPage() {
             {coverImageVariants.length > 0 && (
               <div className="mt-8">
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">
-                  Your Cover Options — Pick Your Favourite
+                  YOUR COVER PAGE OPTIONS: SELECT YOUR FAVORITE
                 </p>
                 <div
                   className={`grid gap-4 ${
@@ -376,6 +382,23 @@ export default function FreeGenerationPage() {
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {/* Nudge to use remaining free try */}
+            {hasUnusedTries && (
+              <div className="mt-6 rounded-2xl border border-orange-200 bg-orange-50 p-4 flex items-start gap-3">
+                <Sparkles className="w-5 h-5 text-orange-500 mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-orange-900">
+                    You have 1 free try left — upload a second photo to compare
+                    options!
+                  </p>
+                  <p className="text-xs text-orange-700 mt-1">
+                    Try a different photo or angle. Pick the sketch you love
+                    most before continuing.
+                  </p>
                 </div>
               </div>
             )}
@@ -424,13 +447,15 @@ export default function FreeGenerationPage() {
               onClick={() => setStep("setup")}
               className={cn(
                 "w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-xl font-semibold text-base transition-all h-14",
-                coverImageVariants.length > 0
+                coverImageVariants.length > 0 && !hasUnusedTries
                   ? "bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20"
-                  : "bg-gray-100 text-gray-500 hover:bg-gray-200",
+                  : coverImageVariants.length > 0
+                    ? "bg-white border border-gray-300 text-gray-600 hover:bg-gray-50"
+                    : "bg-gray-100 text-gray-500 hover:bg-gray-200",
               )}
             >
               <span>
-                {coverImageVariants.length > 0
+                {coverImageVariants.length > 0 && !hasUnusedTries
                   ? "Continue to Book Setup"
                   : "Skip to Book Setup"}
               </span>

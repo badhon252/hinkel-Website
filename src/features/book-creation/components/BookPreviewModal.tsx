@@ -152,9 +152,9 @@ export default function BookPreviewModal({
                 <DialogTitle className="text-lg font-bold text-white">
                   Book Preview
                 </DialogTitle>
-                <p className="text-sm text-stone-400">
+                {/* <p className="text-sm text-stone-400">
                   Preview your book without generating a downloadable PDF.
-                </p>
+                </p> */}
               </div>
             </div>
 
