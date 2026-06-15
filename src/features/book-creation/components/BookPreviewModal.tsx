@@ -1,17 +1,21 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useBookStore } from "../store/book-store";
 import type { BookState, PreviewPage } from "../types";
 import { buildBookPreviewPages } from "../utils/preview-pages";
 import {
+  BookOpen,
   ChevronLeft,
   ChevronRight,
   Eye,
   FileImage,
+  Heart,
+  Layers,
   Search,
   ZoomIn,
   ZoomOut,
@@ -23,6 +27,24 @@ interface BookPreviewModalProps {
 }
 
 const clampZoom = (value: number) => Math.min(1.3, Math.max(0.75, value));
+
+const pageVariants = {
+  enter: (dir: "left" | "right") => ({
+    x: dir === "right" ? 80 : -80,
+    opacity: 0,
+  }),
+  center: { x: 0, opacity: 1 },
+  exit: (dir: "left" | "right") => ({
+    x: dir === "right" ? -80 : 80,
+    opacity: 0,
+  }),
+};
+
+const pageTypeIcon: Record<string, React.ReactNode> = {
+  cover: <BookOpen className="h-3.5 w-3.5 text-orange-400" />,
+  dedication: <Heart className="h-3.5 w-3.5 text-pink-400" />,
+  content: <Layers className="h-3.5 w-3.5 text-stone-400" />,
+};
 
 function PreviewCanvas({ page }: { page: PreviewPage }) {
   const title = page.title || "My Coloring Book";
@@ -43,7 +65,7 @@ function PreviewCanvas({ page }: { page: PreviewPage }) {
                     alt={title}
                     fill
                     unoptimized
-                    className="object-contain"
+                    className="object-cover"
                   />
                 </div>
               ) : (
@@ -70,7 +92,7 @@ function PreviewCanvas({ page }: { page: PreviewPage }) {
           <div className="flex h-full flex-col">
             <div className="min-h-[56px] px-4 pt-2 text-center">
               <p className="line-clamp-2 text-xl font-black text-stone-900">
-                {page.topLine || "\u00A0"}
+                {page.topLine || " "}
               </p>
             </div>
             <div className="flex flex-1 items-center justify-center px-3 py-4">
@@ -95,7 +117,7 @@ function PreviewCanvas({ page }: { page: PreviewPage }) {
             </div>
             <div className="min-h-[64px] px-4 pb-2 text-center">
               <p className="line-clamp-2 text-xl font-black text-stone-900">
-                {page.bottomLine || "\u00A0"}
+                {page.bottomLine || " "}
               </p>
             </div>
             <p className="pt-2 text-center text-xs font-bold uppercase tracking-[0.18em] text-stone-500">
@@ -115,7 +137,12 @@ export default function BookPreviewModal({
   const state = useBookStore((bookState: BookState) => bookState);
   const pages = useMemo(() => buildBookPreviewPages(state), [state]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(0.8);
+  const [direction, setDirection] = useState<"left" | "right">("right");
+
+  const activePageRef = useRef<HTMLButtonElement>(null);
+  const touchStartX = useRef<number>(0);
+  const lastScrollTime = useRef<number>(0);
 
   const safeIndex = Math.min(currentIndex, Math.max(pages.length - 1, 0));
   const currentPage = pages[safeIndex];
@@ -128,12 +155,58 @@ export default function BookPreviewModal({
     }
   };
 
-  const goPrevious = () => {
+  const goPrevious = useCallback(() => {
+    setDirection("left");
     setCurrentIndex((prev) => Math.max(0, prev - 1));
+  }, []);
+
+  const goNext = useCallback(() => {
+    setDirection("right");
+    setCurrentIndex((prev) => Math.min(pages.length - 1, prev + 1));
+  }, [pages.length]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") goPrevious();
+      else if (e.key === "ArrowRight") goNext();
+      else if (e.key === "=" || e.key === "+")
+        setZoom((prev) => clampZoom(prev + 0.1));
+      else if (e.key === "-") setZoom((prev) => clampZoom(prev - 0.1));
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, goPrevious, goNext]);
+
+  // Scroll active sidebar item into view
+  useEffect(() => {
+    activePageRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+    });
+  }, [safeIndex]);
+
+  const handleWheel = (e: React.WheelEvent) => {
+    // When zoomed in past 100%, let the container scroll normally
+    if (zoom > 1) return;
+    const now = Date.now();
+    if (now - lastScrollTime.current < 400) return;
+    lastScrollTime.current = now;
+    if (e.deltaY > 0) goNext();
+    else goPrevious();
   };
 
-  const goNext = () => {
-    setCurrentIndex((prev) => Math.min(pages.length - 1, prev + 1));
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const delta = touchStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(delta) > 50) {
+      if (delta > 0) goNext();
+      else goPrevious();
+    }
   };
 
   return (
@@ -152,9 +225,6 @@ export default function BookPreviewModal({
                 <DialogTitle className="text-lg font-bold text-white">
                   Book Preview
                 </DialogTitle>
-                {/* <p className="text-sm text-stone-400">
-                  Preview your book without generating a downloadable PDF.
-                </p> */}
               </div>
             </div>
 
@@ -168,6 +238,9 @@ export default function BookPreviewModal({
                 <ZoomOut className="mr-2 h-4 w-4" />
                 Zoom out
               </Button>
+              <span className="min-w-14 text-center text-sm font-semibold text-stone-300">
+                {Math.round(zoom * 100)}%
+              </span>
               <Button
                 variant="outline"
                 size="sm"
@@ -211,7 +284,11 @@ export default function BookPreviewModal({
                 {pages.map((page, index) => (
                   <button
                     key={page.id}
-                    onClick={() => setCurrentIndex(index)}
+                    ref={index === safeIndex ? activePageRef : undefined}
+                    onClick={() => {
+                      setDirection(index > safeIndex ? "right" : "left");
+                      setCurrentIndex(index);
+                    }}
                     className={`min-w-[140px] rounded-2xl border px-4 py-3 text-left transition-all lg:min-w-0 ${
                       index === safeIndex
                         ? "border-orange-400 bg-orange-500/15 text-white"
@@ -221,7 +298,10 @@ export default function BookPreviewModal({
                     <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">
                       Sheet {page.pageNumber}
                     </p>
-                    <p className="mt-1 text-sm font-bold">{page.label}</p>
+                    <div className="mt-1 flex items-center gap-1.5">
+                      {pageTypeIcon[page.type]}
+                      <p className="text-sm font-bold">{page.label}</p>
+                    </div>
                   </button>
                 ))}
               </div>
@@ -242,16 +322,34 @@ export default function BookPreviewModal({
                 </div>
               </div>
 
-              <div className="min-h-0 flex-1 overflow-auto px-4 py-6 sm:px-6">
+              <div
+                className="min-h-0 flex-1 overflow-auto px-4 py-6 sm:px-6"
+                onWheel={handleWheel}
+                onTouchStart={handleTouchStart}
+                onTouchEnd={handleTouchEnd}
+              >
                 {currentPage ? (
                   <div
-                    className="mx-auto flex min-h-full items-start justify-center"
+                    className="mx-auto flex min-h-full items-start justify-center overflow-hidden"
                     style={{
                       transform: `scale(${zoom})`,
                       transformOrigin: "top center",
                     }}
                   >
-                    <PreviewCanvas page={currentPage} />
+                    <AnimatePresence mode="wait" custom={direction}>
+                      <motion.div
+                        key={safeIndex}
+                        custom={direction}
+                        variants={pageVariants}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        transition={{ duration: 0.2, ease: "easeInOut" }}
+                        className="w-full"
+                      >
+                        <PreviewCanvas page={currentPage} />
+                      </motion.div>
+                    </AnimatePresence>
                   </div>
                 ) : (
                   <div className="flex h-full items-center justify-center text-stone-400">
@@ -271,8 +369,8 @@ export default function BookPreviewModal({
                   Previous
                 </Button>
                 <p className="text-center text-xs text-stone-400">
-                  This preview is for on-screen review only. Your final PDF is
-                  delivered separately after fulfillment.
+                  Use arrow keys or swipe to navigate · This preview is for
+                  on-screen review only.
                 </p>
                 <Button
                   variant="outline"
